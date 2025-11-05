@@ -1,0 +1,18 @@
+# Development files
+src/
+examples/
+docs/
+.github/
+*.config.js
+*.config.ts
+tsconfig.json
+
+# Tests
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+
+# Git
+.git
+.gitignore
