@@ -1,5 +1,5 @@
 {
-  "name": "react-image-uploader-dnd",
+  "name": "react-image-uploader",
   "version": "1.0.0",
   "description": "A state-agnostic, production-ready React component for multi-image uploads with drag & drop, reordering, and cloud direct upload support",
   "main": "dist/index.js",
@@ -34,12 +34,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/YOUR_USERNAME/react-image-uploader-dnd.git"
+    "url": "https://github.com/abdulmughniHamzah/react-image-uploader.git"
   },
   "bugs": {
-    "url": "https://github.com/YOUR_USERNAME/react-image-uploader-dnd/issues"
+    "url": "https://github.com/abdulmughniHamzah/react-image-uploader/issues"
   },
-  "homepage": "https://github.com/YOUR_USERNAME/react-image-uploader-dnd#readme",
+  "homepage": "https://github.com/abdulmughniHamzah/react-image-uploader#readme",
   "peerDependencies": {
     "react": ">=18.0.0",
     "react-dom": ">=18.0.0"

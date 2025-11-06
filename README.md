@@ -2,7 +2,7 @@
 
 A state-agnostic, production-ready React component for multi-image uploads with drag & drop reordering and cloud direct upload support.
 
-[![npm version](https://img.shields.io/npm/v/react-image-uploader-dnd.svg)](https://www.npmjs.com/package/react-image-uploader-dnd)
+[![npm version](https://img.shields.io/npm/v/react-image-uploader.svg)](https://www.npmjs.com/package/react-image-uploader)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## ✨ Features
@@ -24,18 +24,18 @@ A state-agnostic, production-ready React component for multi-image uploads with 
 ## 📦 Installation
 
 ```bash
-npm install react-image-uploader-dnd
+npm install react-image-uploader
 # or
-yarn add react-image-uploader-dnd
+yarn add react-image-uploader
 # or
-pnpm add react-image-uploader-dnd
+pnpm add react-image-uploader
 ```
 
 ## 🚀 Quick Start
 
 ```tsx
 import { useState } from 'react';
-import ImageUploader, { PhotoType } from 'react-image-uploader-dnd';
+import ImageUploader, { PhotoType } from 'react-image-uploader';
 
 function MyForm() {
   const [photos, setPhotos] = useState<PhotoType[]>([]);
@@ -194,7 +194,7 @@ export interface PhotoType {
 
 ```tsx
 import { useDispatch, useSelector } from 'react-redux';
-import ImageUploader from 'react-image-uploader-dnd';
+import ImageUploader from 'react-image-uploader';
 
 function MyForm() {
   const dispatch = useDispatch();
@@ -216,7 +216,7 @@ function MyForm() {
 
 ```tsx
 import create from 'zustand';
-import ImageUploader from 'react-image-uploader-dnd';
+import ImageUploader from 'react-image-uploader';
 
 const useStore = create((set) => ({
   photos: [],
@@ -371,10 +371,10 @@ Built with:
 
 ## 📞 Support
 
-- 🐛 [Report bugs](https://github.com/YOUR_USERNAME/react-image-uploader-dnd/issues)
-- 💡 [Request features](https://github.com/YOUR_USERNAME/react-image-uploader-dnd/issues)
-- 📖 [Documentation](https://github.com/YOUR_USERNAME/react-image-uploader-dnd#readme)
+- 🐛 [Report bugs](https://github.com/abdulmughniHamzah/react-image-uploader/issues)
+- 💡 [Request features](https://github.com/abdulmughniHamzah/react-image-uploader/issues)
+- 📖 [Documentation](https://github.com/abdulmughniHamzah/react-image-uploader#readme)
 
 ---
 
-Made with ❤️ by [Abi](https://github.com/YOUR_USERNAME)
+Made with ❤️ by [Abi](https://github.com/abdulmughniHamzah)
