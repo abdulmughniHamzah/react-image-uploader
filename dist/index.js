@@ -4702,84 +4702,84 @@ const Uploader = ({ isImmediateSyncMode = false, maxBlobs, maxPhotos, syncBlobs,
         }
     }, [maxItems, blobs, addBlob]);
     React.useCallback(async (checksum) => {
-        const photo = photos.find(p => p.checksum === checksum);
-        if (!photo)
+        const blob = blobs.find(p => p.checksum === checksum);
+        if (!blob)
             return;
         try {
-            updatePhotoState(checksum, { state: 'UPLOADING_URL_GENERATING' });
+            updateBlobState(checksum, { state: 'UPLOADING_URL_GENERATING' });
             const result = await mutations.getUploadUrl({
                 checksum,
-                name: photo.name,
-                mimeType: photo.mimeType,
-                size: photo.size,
+                name: blob.name,
+                mimeType: blob.mimeType,
+                size: blob.size,
             });
-            updatePhotoState(checksum, {
-                uploadUrl: result.uploadUrl,
-                key: result.key,
+            updateBlobState(checksum, {
+                uploadUrl: result.data.uploadUrl,
+                key: result.data.key,
                 state: 'UPLOADING_URL_GENERATED',
             });
         }
         catch (error) {
-            updatePhotoState(checksum, {
+            updateBlobState(checksum, {
                 errorMessage: error.message || 'Failed to get upload URL',
                 state: 'SELECTED_FOR_UPLOAD',
             });
         }
-    }, [photos, mutations, updatePhotoState]);
+    }, [blobs, mutations, updateBlobState]);
     React.useCallback(async (checksum, file) => {
-        const photo = photos.find(p => p.checksum === checksum);
-        if (!photo || !photo.uploadUrl)
+        const blob = blobs.find(p => p.checksum === checksum);
+        if (!blob || !blob.uploadUrl)
             return;
         try {
-            updatePhotoState(checksum, { state: 'UPLOADING' });
-            await mutations.directUpload(photo.uploadUrl, file);
-            updatePhotoState(checksum, { state: 'UPLOADED' });
+            updateBlobState(checksum, { state: 'UPLOADING' });
+            await mutations.directUpload(blob.uploadUrl, file);
+            updateBlobState(checksum, { state: 'UPLOADED' });
         }
         catch (error) {
-            updatePhotoState(checksum, {
+            updateBlobState(checksum, {
                 errorMessage: error.message || 'Failed to upload file',
                 state: 'UPLOADING_URL_GENERATED',
             });
         }
-    }, [photos, mutations, updatePhotoState]);
+    }, [blobs, mutations, updateBlobState]);
     React.useCallback(async (checksum) => {
-        const photo = photos.find(p => p.checksum === checksum);
-        if (!photo || !photo.key)
+        const blob = blobs.find(p => p.checksum === checksum);
+        if (!blob || !blob.key)
             return;
         try {
-            updatePhotoState(checksum, { state: 'BLOB_CREATING' });
+            updateBlobState(checksum, { state: 'BLOB_CREATING' });
             const result = await mutations.createBlob({
-                key: photo.key,
+                key: blob.key,
                 checksum,
-                name: photo.name,
-                mimeType: photo.mimeType,
-                size: photo.size,
+                name: blob.name,
+                mimeType: blob.mimeType,
+                size: blob.size,
             });
-            updatePhotoState(checksum, {
-                blobId: result.id,
+            updateBlobState(checksum, {
+                blobId: result.data.id,
                 state: 'BLOB_CREATED',
             });
         }
         catch (error) {
-            updatePhotoState(checksum, {
+            updateBlobState(checksum, {
                 errorMessage: error.message || 'Failed to create blob',
                 state: 'UPLOADED',
             });
         }
-    }, [photos, mutations, updatePhotoState]);
+    }, [blobs, mutations, updateBlobState]);
     React.useCallback(async (checksum, attId) => {
-        const photo = photos.find(p => p.checksum === checksum);
-        if (!photo || !photo.blobId)
+        const blob = blobs.find(p => p.checksum === checksum);
+        if (!blob || !blob.blobId)
             return;
         try {
-            updatePhotoState(checksum, { state: 'ATTACHING' });
+            updateBlobState(checksum, { state: 'ATTACHING' });
             const result = await mutations.createAttachment({
-                blobId: photo.blobId,
+                blobId: blob.blobId,
                 attachableId: attId,
                 attachableType,
             });
-            updatePhotoState(checksum, {
-                attachmentId: result.id,
+            updateBlobState(checksum, {
+                attachmentId: result.data.id,
                 state: 'ATTACHED',
             });
         }
@@ -4791,28 +4791,28 @@ const Uploader = ({ isImmediateSyncMode = false, maxBlobs, maxPhotos, syncBlobs,
         }
     }, [photos, mutations, attachableType, updatePhotoState]);
     React.useCallback(async (checksum) => {
-        const photo = photos.find(p => p.checksum === checksum);
-        if (!photo || !photo.attachmentId)
+        photos.find(p => p.checksum === checksum);
+        if (!blob || !blob.attachmentId)
             return;
         try {
-            updatePhotoState(checksum, { state: 'DETACHING' });
-            await mutations.deleteAttachment(photo.attachmentId);
-            updatePhotoState(checksum, { state: 'DETACHED' });
+            updateBlobState(checksum, { state: 'DETACHING' });
+            await mutations.deleteAttachment(blob.attachmentId);
+            updateBlobState(checksum, { state: 'DETACHED' });
         }
         catch (error) {
-            updatePhotoState(checksum, {
+            updateBlobState(checksum, {
                 errorMessage: error.message || 'Failed to delete attachment',
                 state: 'ATTACHED',
             });
         }
     }, [photos, mutations, updatePhotoState]);
     React.useCallback(async (checksum) => {
-        const photo = photos.find(p => p.checksum === checksum);
-        if (!photo || !photo.key)
+        photos.find(p => p.checksum === checksum);
+        if (!blob || !blob.key)
             return;
         try {
-            const result = await mutations.getPreviewUrl(photo.key);
-            updatePhotoState(checksum, { previewUrl: result.previewUrl });
+            const result = await mutations.getPreviewUrl(blob.key);
+            updateBlobState(checksum, { previewUrl: result.data.previewUrl });
         }
         catch (error) {
             console.error('Failed to get preview URL:', error);
@@ -4864,7 +4864,7 @@ const Uploader = ({ isImmediateSyncMode = false, maxBlobs, maxPhotos, syncBlobs,
         setMainBlobHash(null);
         legacyResetMainPhotoHash?.();
     }, [legacyResetMainPhotoHash]);
-    return (jsxRuntime.jsx(DndContext, { sensors: sensors, collisionDetection: closestCenter, onDragEnd: handleDragEnd, children: jsxRuntime.jsx(SortableContext, { items: blobs.map((blob) => photo.checksum ?? ''), strategy: rectSortingStrategy, children: jsxRuntime.jsxs("div", { className: styling.containerClassName, children: [blobs.length < maxItems && !processRunning && (jsxRuntime.jsxs("label", { title: 'Upload Image', className: styling.uploadButtonClassName, children: [jsxRuntime.jsx("span", { className: 'text-center', children: "Upload" }), jsxRuntime.jsx("input", { type: 'file', accept: 'image/*', multiple: true, onChange: (e) => {
+    return (jsxRuntime.jsx(DndContext, { sensors: sensors, collisionDetection: closestCenter, onDragEnd: handleDragEnd, children: jsxRuntime.jsx(SortableContext, { items: blobs.map((blob) => blob.checksum ?? ''), strategy: rectSortingStrategy, children: jsxRuntime.jsxs("div", { className: styling.containerClassName, children: [blobs.length < maxItems && !processRunning && (jsxRuntime.jsxs("label", { title: 'Upload File', className: styling.uploadButtonClassName, children: [jsxRuntime.jsx("span", { className: 'text-center', children: "Upload" }), jsxRuntime.jsx("input", { type: 'file', accept: 'image/*', multiple: true, onChange: (e) => {
                                     if (e.target.files && e.target.files.length > 0) {
                                         handleFiles(e.target.files);
                                         e.target.value = '';
@@ -4872,7 +4872,7 @@ const Uploader = ({ isImmediateSyncMode = false, maxBlobs, maxPhotos, syncBlobs,
                                 }, onClick: (e) => {
                                     e.target.value = '';
                                 }, className: 'hidden' })] })), blobs
-                        .filter((blob) => photo.checksum)
+                        .filter((blob) => blob.checksum)
                         .map((blob) => (jsxRuntime.jsx(SortableBlob, { id: blob.checksum ?? '', blob: blob, filesMap: filesMap, isImmediateSyncMode: isImmediateSyncMode, attachableId: attachableId, attachableType: attachableType, syncBlobs: shouldSyncBlobs, mutations: mutations, stateSetters: stateSetters, styling: styling }, blob.checksum ?? '')))] }) }) }));
 };
 

@@ -154,92 +154,92 @@ export const Uploader = ({
 
   // ===== MUTATION WRAPPERS (Internal state management) =====
   const wrappedGetUploadUrl = useCallback(async (checksum: string) => {
-    const photo = photos.find(p => p.checksum === checksum);
-    if (!photo) return;
+    const blob = blobs.find(p => p.checksum === checksum);
+    if (!blob) return;
 
     try {
-      updatePhotoState(checksum, { state: 'UPLOADING_URL_GENERATING' });
+      updateBlobState(checksum, { state: 'UPLOADING_URL_GENERATING' });
       
       const result = await mutations.getUploadUrl({
         checksum,
-        name: photo.name!,
-        mimeType: photo.mimeType!,
-        size: photo.size!,
+        name: blob.name!,
+        mimeType: blob.mimeType!,
+        size: blob.size!,
       });
 
-      updatePhotoState(checksum, {
-        uploadUrl: result.uploadUrl,
-        key: result.key,
+      updateBlobState(checksum, {
+        uploadUrl: result.data.uploadUrl,
+        key: result.data.key,
         state: 'UPLOADING_URL_GENERATED',
       });
     } catch (error: any) {
-      updatePhotoState(checksum, {
+      updateBlobState(checksum, {
         errorMessage: error.message || 'Failed to get upload URL',
         state: 'SELECTED_FOR_UPLOAD',
       });
     }
-  }, [photos, mutations, updatePhotoState]);
+  }, [blobs, mutations, updateBlobState]);
 
   const wrappedDirectUpload = useCallback(async (checksum: string, file: File) => {
-    const photo = photos.find(p => p.checksum === checksum);
-    if (!photo || !photo.uploadUrl) return;
+    const blob = blobs.find(p => p.checksum === checksum);
+    if (!blob || !blob.uploadUrl) return;
 
     try {
-      updatePhotoState(checksum, { state: 'UPLOADING' });
+      updateBlobState(checksum, { state: 'UPLOADING' });
       
-      await mutations.directUpload(photo.uploadUrl, file);
+      await mutations.directUpload(blob.uploadUrl, file);
 
-      updatePhotoState(checksum, { state: 'UPLOADED' });
+      updateBlobState(checksum, { state: 'UPLOADED' });
     } catch (error: any) {
-      updatePhotoState(checksum, {
+      updateBlobState(checksum, {
         errorMessage: error.message || 'Failed to upload file',
         state: 'UPLOADING_URL_GENERATED',
       });
     }
-  }, [photos, mutations, updatePhotoState]);
+  }, [blobs, mutations, updateBlobState]);
 
   const wrappedCreateBlob = useCallback(async (checksum: string) => {
-    const photo = photos.find(p => p.checksum === checksum);
-    if (!photo || !photo.key) return;
+    const blob = blobs.find(p => p.checksum === checksum);
+    if (!blob || !blob.key) return;
 
     try {
-      updatePhotoState(checksum, { state: 'BLOB_CREATING' });
+      updateBlobState(checksum, { state: 'BLOB_CREATING' });
       
       const result = await mutations.createBlob({
-        key: photo.key,
+        key: blob.key,
         checksum,
-        name: photo.name!,
-        mimeType: photo.mimeType!,
-        size: photo.size!,
+        name: blob.name!,
+        mimeType: blob.mimeType!,
+        size: blob.size!,
       });
 
-      updatePhotoState(checksum, {
-        blobId: result.id,
+      updateBlobState(checksum, {
+        blobId: result.data.id,
         state: 'BLOB_CREATED',
       });
     } catch (error: any) {
-      updatePhotoState(checksum, {
+      updateBlobState(checksum, {
         errorMessage: error.message || 'Failed to create blob',
         state: 'UPLOADED',
       });
     }
-  }, [photos, mutations, updatePhotoState]);
+  }, [blobs, mutations, updateBlobState]);
 
   const wrappedCreateAttachment = useCallback(async (checksum: string, attId: number) => {
-    const photo = photos.find(p => p.checksum === checksum);
-    if (!photo || !photo.blobId) return;
+    const blob = blobs.find(p => p.checksum === checksum);
+    if (!blob || !blob.blobId) return;
 
     try {
-      updatePhotoState(checksum, { state: 'ATTACHING' });
+      updateBlobState(checksum, { state: 'ATTACHING' });
       
       const result = await mutations.createAttachment({
-        blobId: photo.blobId,
+        blobId: blob.blobId,
         attachableId: attId,
         attachableType,
       });
 
-      updatePhotoState(checksum, {
-        attachmentId: result.id,
+      updateBlobState(checksum, {
+        attachmentId: result.data.id,
         state: 'ATTACHED',
       });
     } catch (error: any) {
@@ -252,16 +252,16 @@ export const Uploader = ({
 
   const wrappedDeleteAttachment = useCallback(async (checksum: string) => {
     const photo = photos.find(p => p.checksum === checksum);
-    if (!photo || !photo.attachmentId) return;
+    if (!blob || !blob.attachmentId) return;
 
     try {
-      updatePhotoState(checksum, { state: 'DETACHING' });
+      updateBlobState(checksum, { state: 'DETACHING' });
       
-      await mutations.deleteAttachment(photo.attachmentId);
+      await mutations.deleteAttachment(blob.attachmentId);
 
-      updatePhotoState(checksum, { state: 'DETACHED' });
+      updateBlobState(checksum, { state: 'DETACHED' });
     } catch (error: any) {
-      updatePhotoState(checksum, {
+      updateBlobState(checksum, {
         errorMessage: error.message || 'Failed to delete attachment',
         state: 'ATTACHED',
       });
@@ -270,11 +270,11 @@ export const Uploader = ({
 
   const wrappedGetPreviewUrl = useCallback(async (checksum: string) => {
     const photo = photos.find(p => p.checksum === checksum);
-    if (!photo || !photo.key) return;
+    if (!blob || !blob.key) return;
 
     try {
-      const result = await mutations.getPreviewUrl(photo.key);
-      updatePhotoState(checksum, { previewUrl: result.previewUrl });
+      const result = await mutations.getPreviewUrl(blob.key);
+      updateBlobState(checksum, { previewUrl: result.data.previewUrl });
     } catch (error: any) {
       console.error('Failed to get preview URL:', error);
     }
@@ -343,13 +343,13 @@ export const Uploader = ({
       onDragEnd={handleDragEnd}
     >
       <SortableContext
-        items={blobs.map((blob) => photo.checksum ?? '')}
+        items={blobs.map((blob) => blob.checksum ?? '')}
         strategy={rectSortingStrategy}
       >
         <div className={styling.containerClassName}>
           {blobs.length < maxItems && !processRunning && (
             <label
-              title='Upload Image'
+              title='Upload File'
               className={styling.uploadButtonClassName}
             >
               <span className='text-center'>Upload</span>
@@ -371,7 +371,7 @@ export const Uploader = ({
             </label>
           )}
           {blobs
-            .filter((blob) => photo.checksum)
+            .filter((blob) => blob.checksum)
             .map((blob) => (
               <SortableBlob
                 key={blob.checksum ?? ''}
