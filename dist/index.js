@@ -4578,20 +4578,10 @@ const Blob = ({ isImmediateSyncMode, attachableId, attachableType, file, blob, m
         'ATTACHMENT_FAILED',
         'DETACHMENT_FAILED',
     ].includes(blob.state ?? '');
-    return (jsxRuntime.jsxs("div", { className: `${styling.photoContainerClassName} ${isInFailedState ? 'ring-2 ring-red-500' : ''}`, title: blob.name ?? '', children: [jsxRuntime.jsx("img", { src: blob.previewUrl, alt: `${blob.name}`, className: `${styling.photoImageClassName} ${isInFailedState ? 'opacity-50' : ''}` }), !isInFailedState &&
+    return (jsxRuntime.jsxs("div", { className: `${styling.blobContainerClassName} ${isInFailedState ? styling.blobContainerFailedClassName : ''}`, title: blob.name ?? '', children: [jsxRuntime.jsx("img", { src: blob.previewUrl, alt: `${blob.name}`, className: `${styling.blobImageClassName} ${isInFailedState ? styling.blobImageFailedClassName : ''}` }), !isInFailedState &&
                 blob.state !== 'ATTACHED' &&
                 syncBlobs &&
-                (blob.state !== 'BLOB_CREATED' || attachableId) && (jsxRuntime.jsx("div", { className: styling.loadingClassName, children: jsxRuntime.jsx(Loader, { className: 'text-white animate-spin w-8 h-8' }) })), blob.errorMessage && (jsxRuntime.jsxs("div", { className: styling.errorClassName, children: [jsxRuntime.jsx("div", { className: "text-xs mb-1", children: blob.errorMessage }), isInFailedState && (jsxRuntime.jsx("button", { type: 'button', onClick: handleRetry, className: "mt-1 px-2 py-1 text-xs bg-red-600 hover:bg-red-700 text-white rounded transition-colors", title: "Retry upload", children: "Retry" }))] })), jsxRuntime.jsx("button", { type: 'button', onClick: handleRemoveBlob, className: styling.removeButtonClassName, title: 'Remove blob', children: jsxRuntime.jsx(X, { className: 'w-4 h-4' }) }), mainBlobHash === blob.checksum && (jsxRuntime.jsx("div", { className: styling.mainPhotoBadgeClassName, children: "Main" })), mainBlobHash !== blob.checksum && blob.state === 'ATTACHED' && (jsxRuntime.jsx("button", { type: 'button', onClick: () => setMainBlobHash(blob.checksum), className: `
-            absolute bottom-1 left-1
-            px-2 py-0.5
-            text-xs font-medium
-            bg-white bg-opacity-80 hover:bg-opacity-100
-            text-gray-700
-            rounded
-            cursor-pointer
-            transition-all
-            z-10
-          `.replace(/\s+/g, ' ').trim(), title: 'Set as main blob', children: "Set Main" }))] }));
+                (blob.state !== 'BLOB_CREATED' || attachableId) && (jsxRuntime.jsx("div", { className: styling.loadingContainerClassName, children: jsxRuntime.jsx(Loader, { className: styling.loadingSpinnerClassName }) })), blob.errorMessage && (jsxRuntime.jsxs("div", { className: styling.errorContainerClassName, children: [jsxRuntime.jsx("div", { className: styling.errorMessageClassName, children: blob.errorMessage }), isInFailedState && (jsxRuntime.jsx("button", { type: 'button', onClick: handleRetry, className: styling.retryButtonClassName, title: "Retry upload", children: "Retry" }))] })), jsxRuntime.jsx("button", { type: 'button', onClick: handleRemoveBlob, className: styling.removeButtonClassName, title: 'Remove blob', children: jsxRuntime.jsx(X, { className: styling.removeButtonIconClassName }) }), mainBlobHash === blob.checksum && (jsxRuntime.jsx("div", { className: styling.mainBlobBadgeClassName, children: "Main" })), mainBlobHash !== blob.checksum && blob.state === 'ATTACHED' && (jsxRuntime.jsx("button", { type: 'button', onClick: () => setMainBlobHash(blob.checksum), className: styling.setMainButtonClassName, title: 'Set as main blob', children: "Set Main" }))] }));
 };
 
 function SortableBlob({ id, blob, filesMap, isImmediateSyncMode, attachableId, attachableType, mainBlobHash, setMainBlobHash, deleteFromFilesMap, removeBlobByHash, resetMainBlobHash, syncBlobs, mutations, stateSetters, styling, }) {
@@ -4606,60 +4596,105 @@ function SortableBlob({ id, blob, filesMap, isImmediateSyncMode, attachableId, a
 }
 
 const defaultStyling = {
-    containerClassName: 'flex flex-wrap justify-start items-stretch gap-x-2 gap-y-4 lg:gap-x-4 lg:gap-y-6 rounded-lg',
+    containerClassName: `
+    flex flex-wrap justify-start items-stretch
+    gap-x-2 gap-y-4 lg:gap-x-4 lg:gap-y-6
+    w-full
+  `.replace(/\s+/g, ' ').trim(),
     uploadButtonClassName: `
     w-[80px] h-[80px] sm:w-[100px] sm:h-[100px] md:w-[120px] md:h-[120px] lg:w-[140px] lg:h-[140px]
-    text-secondary font-medium text-t2
     flex items-center justify-center
-    border border-dashed border-bg-primary
-    rounded-[4px]
+    text-sm font-medium text-gray-600
+    border-2 border-dashed border-gray-300
+    rounded-lg
+    bg-gray-50 hover:bg-gray-100
+    hover:text-gray-800 hover:border-gray-400
     cursor-pointer
-    bg-primary hover:!bg-[var(--bg-focused-color)]
-    hover:!text-[var(--text-accent-primary-color)] hover:!border-[var(--border-accent-primary-color)]
-    transition-colors duration-100
+    transition-all duration-200
   `.replace(/\s+/g, ' ').trim(),
-    photoContainerClassName: `
+    blobContainerClassName: `
     relative
     w-[80px] h-[80px] sm:w-[100px] sm:h-[100px] md:w-[120px] md:h-[120px] lg:w-[140px] lg:h-[140px]
-    rounded-[4px]
+    rounded-lg
     overflow-hidden
-    bg-secondary
-    border border-bg-primary
+    bg-white
+    border border-gray-200
+    shadow-sm
   `.replace(/\s+/g, ' ').trim(),
-    photoImageClassName: 'w-full h-full object-cover',
+    blobImageClassName: `
+    w-full h-full object-cover
+  `.replace(/\s+/g, ' ').trim(),
+    blobContainerFailedClassName: `
+    ring-2 ring-red-500
+  `.replace(/\s+/g, ' ').trim(),
+    blobImageFailedClassName: `
+    opacity-50
+  `.replace(/\s+/g, ' ').trim(),
     removeButtonClassName: `
     absolute top-1 right-1
     w-6 h-6
     flex items-center justify-center
     rounded-full
-    bg-danger-primary hover:bg-danger-secondary
+    bg-red-500 hover:bg-red-600
     text-white
     cursor-pointer
-    transition-colors
+    transition-colors duration-200
+    shadow-md
     z-10
   `.replace(/\s+/g, ' ').trim(),
-    mainPhotoBadgeClassName: `
+    removeButtonIconClassName: `
+    w-4 h-4
+  `.replace(/\s+/g, ' ').trim(),
+    mainBlobBadgeClassName: `
+    absolute bottom-1 left-1
+    px-2 py-0.5
+    text-xs font-semibold
+    bg-blue-600
+    text-white
+    rounded
+    shadow-sm
+    z-10
+  `.replace(/\s+/g, ' ').trim(),
+    setMainButtonClassName: `
     absolute bottom-1 left-1
     px-2 py-0.5
     text-xs font-medium
-    bg-accent-primary
-    text-white
+    bg-white bg-opacity-90 hover:bg-opacity-100
+    text-gray-700 hover:text-gray-900
     rounded
+    cursor-pointer
+    transition-all duration-200
+    shadow-sm
     z-10
   `.replace(/\s+/g, ' ').trim(),
-    loadingClassName: `
+    loadingContainerClassName: `
     absolute inset-0
     flex items-center justify-center
-    bg-black bg-opacity-30
+    bg-black bg-opacity-40
+    backdrop-blur-sm
     z-20
   `.replace(/\s+/g, ' ').trim(),
-    errorClassName: `
+    loadingSpinnerClassName: `
+    text-white animate-spin w-8 h-8
+  `.replace(/\s+/g, ' ').trim(),
+    errorContainerClassName: `
     absolute bottom-0 left-0 right-0
+    px-2 py-2
+    bg-red-600
+    flex flex-col items-start gap-1
+    z-10
+  `.replace(/\s+/g, ' ').trim(),
+    errorMessageClassName: `
+    text-xs text-white leading-tight
+  `.replace(/\s+/g, ' ').trim(),
+    retryButtonClassName: `
     px-2 py-1
-    text-xs
-    bg-danger-primary
-    text-white
-    truncate
+    text-xs font-medium
+    bg-white text-red-600
+    hover:bg-red-50
+    rounded
+    transition-colors duration-200
+    cursor-pointer
   `.replace(/\s+/g, ' ').trim(),
 };
 function mergeStyling(custom) {

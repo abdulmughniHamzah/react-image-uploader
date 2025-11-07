@@ -263,13 +263,13 @@ const Blob: React.FC<BlobProps> = ({
 
   return (
     <div 
-      className={`${styling.photoContainerClassName} ${isInFailedState ? 'ring-2 ring-red-500' : ''}`}
+      className={`${styling.blobContainerClassName} ${isInFailedState ? styling.blobContainerFailedClassName : ''}`}
       title={blob.name ?? ''}
     >
       <img
         src={blob.previewUrl!}
         alt={`${blob.name}`}
-        className={`${styling.photoImageClassName} ${isInFailedState ? 'opacity-50' : ''}`}
+        className={`${styling.blobImageClassName} ${isInFailedState ? styling.blobImageFailedClassName : ''}`}
       />
 
       {/* Loading spinner - shows when blob is in progress (but not in failed state) */}
@@ -277,20 +277,20 @@ const Blob: React.FC<BlobProps> = ({
         blob.state !== 'ATTACHED' &&
         syncBlobs &&
         (blob.state !== 'BLOB_CREATED' || attachableId) && (
-          <div className={styling.loadingClassName}>
-            <Loader className='text-white animate-spin w-8 h-8' />
+          <div className={styling.loadingContainerClassName}>
+            <Loader className={styling.loadingSpinnerClassName} />
           </div>
         )}
 
       {/* Error message with retry button */}
       {blob.errorMessage && (
-        <div className={styling.errorClassName}>
-          <div className="text-xs mb-1">{blob.errorMessage}</div>
+        <div className={styling.errorContainerClassName}>
+          <div className={styling.errorMessageClassName}>{blob.errorMessage}</div>
           {isInFailedState && (
             <button
               type='button'
               onClick={handleRetry}
-              className="mt-1 px-2 py-1 text-xs bg-red-600 hover:bg-red-700 text-white rounded transition-colors"
+              className={styling.retryButtonClassName}
               title="Retry upload"
             >
               Retry
@@ -306,12 +306,12 @@ const Blob: React.FC<BlobProps> = ({
         className={styling.removeButtonClassName}
         title='Remove blob'
       >
-        <X className='w-4 h-4' />
+        <X className={styling.removeButtonIconClassName} />
       </button>
 
       {/* Main blob badge */}
       {mainBlobHash === blob.checksum && (
-        <div className={styling.mainPhotoBadgeClassName}>
+        <div className={styling.mainBlobBadgeClassName}>
           Main
         </div>
       )}
@@ -321,17 +321,7 @@ const Blob: React.FC<BlobProps> = ({
         <button
           type='button'
           onClick={() => setMainBlobHash(blob.checksum!)}
-          className={`
-            absolute bottom-1 left-1
-            px-2 py-0.5
-            text-xs font-medium
-            bg-white bg-opacity-80 hover:bg-opacity-100
-            text-gray-700
-            rounded
-            cursor-pointer
-            transition-all
-            z-10
-          `.replace(/\s+/g, ' ').trim()}
+          className={styling.setMainButtonClassName}
           title='Set as main blob'
         >
           Set Main

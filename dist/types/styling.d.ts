@@ -1,12 +1,19 @@
 export interface StylingProps {
     containerClassName?: string;
     uploadButtonClassName?: string;
-    photoContainerClassName?: string;
-    photoImageClassName?: string;
+    blobContainerClassName?: string;
+    blobImageClassName?: string;
+    blobContainerFailedClassName?: string;
+    blobImageFailedClassName?: string;
     removeButtonClassName?: string;
-    mainPhotoBadgeClassName?: string;
-    loadingClassName?: string;
-    errorClassName?: string;
+    mainBlobBadgeClassName?: string;
+    setMainButtonClassName?: string;
+    loadingContainerClassName?: string;
+    loadingSpinnerClassName?: string;
+    errorContainerClassName?: string;
+    errorMessageClassName?: string;
+    retryButtonClassName?: string;
+    removeButtonIconClassName?: string;
 }
 export declare const defaultStyling: Required<StylingProps>;
 export declare function mergeStyling(custom?: StylingProps): Required<StylingProps>;

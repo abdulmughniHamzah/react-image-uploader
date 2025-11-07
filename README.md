@@ -489,29 +489,60 @@ getUploadUrl: async ({ hash, name, mimeType, size }) => {
 }
 ```
 
-## 🎨 Styling
+## 🎨 Styling & Customization
 
-The component uses standard CSS classes. Customize with your own styles or Tailwind:
+The component uses **100% Tailwind CSS** with NO custom CSS variables. Every element is fully customizable.
 
-```css
-/* Main container */
-.image-uploader {
-  /* Your styles */
-}
+### **14 Customizable Elements:**
 
-/* Photo grid */
-.photo-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 1rem;
-}
+```typescript
+import ImageUploader, { StylingProps } from 'react-blob-uploader';
 
-/* Individual photo */
-.photo-item {
-  position: relative;
-  aspect-ratio: 1;
-}
+const customStyling: StylingProps = {
+  containerClassName: 'flex flex-wrap gap-4',
+  uploadButtonClassName: 'w-32 h-32 border-primary bg-primary-light',
+  blobContainerClassName: 'w-32 h-32 rounded-xl border-2',
+  blobImageClassName: 'w-full h-full object-cover',
+  blobContainerFailedClassName: 'ring-2 ring-red-500',
+  blobImageFailedClassName: 'opacity-50',
+  removeButtonClassName: 'absolute top-2 right-2 bg-red-600',
+  removeButtonIconClassName: 'w-4 h-4',
+  mainBlobBadgeClassName: 'absolute bottom-2 left-2 bg-blue-600',
+  setMainButtonClassName: 'absolute bottom-2 left-2 bg-white',
+  loadingContainerClassName: 'absolute inset-0 bg-black/40',
+  loadingSpinnerClassName: 'text-white animate-spin w-8 h-8',
+  errorContainerClassName: 'absolute bottom-0 left-0 right-0 bg-red-600',
+  errorMessageClassName: 'text-xs text-white',
+  retryButtonClassName: 'px-2 py-1 bg-white text-red-600',
+};
+
+<ImageUploader
+  {...props}
+  styling={customStyling}  // Pass your custom styles
+/>
 ```
+
+### **Quick Examples:**
+
+#### **Match Your Theme:**
+```tsx
+const themedStyling = {
+  uploadButtonClassName: 'w-32 h-32 border-primary bg-background hover:bg-accent',
+  mainBlobBadgeClassName: 'bg-primary text-primary-foreground',
+  retryButtonClassName: 'bg-destructive text-destructive-foreground',
+};
+```
+
+#### **Dark Mode:**
+```tsx
+const darkStyling = {
+  uploadButtonClassName: 'border-gray-600 bg-gray-800 text-gray-300',
+  blobContainerClassName: 'bg-gray-800 border-gray-700',
+  mainBlobBadgeClassName: 'bg-blue-500',
+};
+```
+
+**See [STYLING_GUIDE.md](./STYLING_GUIDE.md) for complete documentation.**
 
 ## 🤝 Contributing
 
