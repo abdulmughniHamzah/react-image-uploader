@@ -18,14 +18,19 @@ export interface BlobType {
     | 'SELECTED_FOR_UPLOAD'
     | 'UPLOADING_URL_GENERATING'
     | 'UPLOADING_URL_GENERATED'
+    | 'UPLOADING_URL_GENERATION_FAILED'  // New: User must retry
     | 'UPLOADING'
     | 'UPLOADED'
+    | 'UPLOAD_FAILED'                     // New: User must retry
     | 'BLOB_CREATING'
     | 'BLOB_CREATED'
+    | 'BLOB_CREATION_FAILED'              // New: User must retry
     | 'ATTACHING'
     | 'ATTACHED'
+    | 'ATTACHMENT_FAILED'                 // New: User must retry
     | 'MARKED_FOR_DETACH'
     | 'DETACHING'
+    | 'DETACHMENT_FAILED'                 // New: User must retry
     | 'DETACHED';
 }
 

@@ -4410,6 +4410,27 @@ const Blob = ({ isImmediateSyncMode, attachableId, attachableType, file, blob, m
             stateSetters.setBlobState(blob.checksum, 'DETACHED');
         }
     };
+    const handleRetry = () => {
+        if (!blob.checksum)
+            return;
+        switch (blob.state) {
+            case 'UPLOADING_URL_GENERATION_FAILED':
+                stateSetters.setBlobState(blob.checksum, 'SELECTED_FOR_UPLOAD');
+                break;
+            case 'UPLOAD_FAILED':
+                stateSetters.setBlobState(blob.checksum, 'UPLOADING_URL_GENERATED');
+                break;
+            case 'BLOB_CREATION_FAILED':
+                stateSetters.setBlobState(blob.checksum, 'UPLOADED');
+                break;
+            case 'ATTACHMENT_FAILED':
+                stateSetters.setBlobState(blob.checksum, 'BLOB_CREATED');
+                break;
+            case 'DETACHMENT_FAILED':
+                stateSetters.setBlobState(blob.checksum, 'MARKED_FOR_DETACH');
+                break;
+        }
+    };
     const unlinkBlob = () => {
         deleteFromFilesMap(blob.checksum);
         removeBlobByHash(blob.checksum);
@@ -4440,7 +4461,7 @@ const Blob = ({ isImmediateSyncMode, attachableId, attachableType, file, blob, m
                         }
                         else {
                             stateSetters.setBlobErrorMessage(result.hash, result.error);
-                            stateSetters.setBlobState(result.hash, 'SELECTED_FOR_UPLOAD');
+                            stateSetters.setBlobState(result.hash, 'UPLOADING_URL_GENERATION_FAILED');
                         }
                     }
                     break;
@@ -4458,7 +4479,7 @@ const Blob = ({ isImmediateSyncMode, attachableId, attachableType, file, blob, m
                         }
                         else {
                             stateSetters.setBlobErrorMessage(result.hash, result.error);
-                            stateSetters.setBlobState(result.hash, 'UPLOADING_URL_GENERATED');
+                            stateSetters.setBlobState(result.hash, 'UPLOAD_FAILED');
                         }
                     }
                     break;
@@ -4481,7 +4502,7 @@ const Blob = ({ isImmediateSyncMode, attachableId, attachableType, file, blob, m
                         }
                         else {
                             stateSetters.setBlobErrorMessage(result.hash, result.error);
-                            stateSetters.setBlobState(result.hash, 'UPLOADED');
+                            stateSetters.setBlobState(result.hash, 'BLOB_CREATION_FAILED');
                         }
                     }
                     break;
@@ -4501,7 +4522,7 @@ const Blob = ({ isImmediateSyncMode, attachableId, attachableType, file, blob, m
                         }
                         else {
                             stateSetters.setBlobErrorMessage(result.hash, result.error);
-                            stateSetters.setBlobState(result.hash, 'BLOB_CREATED');
+                            stateSetters.setBlobState(result.hash, 'ATTACHMENT_FAILED');
                         }
                     }
                     break;
@@ -4523,7 +4544,7 @@ const Blob = ({ isImmediateSyncMode, attachableId, attachableType, file, blob, m
                         }
                         else {
                             stateSetters.setBlobErrorMessage(result.hash, result.error);
-                            stateSetters.setBlobState(result.hash, 'MARKED_FOR_DETACH');
+                            stateSetters.setBlobState(result.hash, 'DETACHMENT_FAILED');
                         }
                     }
                     break;
@@ -4546,9 +4567,17 @@ const Blob = ({ isImmediateSyncMode, attachableId, attachableType, file, blob, m
         ['DETACHED', 'MARKED_FOR_DETACH'].includes(blob.state ?? '')) {
         return null;
     }
-    return (jsxs("div", { className: styling.photoContainerClassName, title: blob.name ?? '', children: [jsx("img", { src: blob.previewUrl, alt: `${blob.name}`, className: styling.photoImageClassName }), blob.state !== 'ATTACHED' &&
+    const isInFailedState = [
+        'UPLOADING_URL_GENERATION_FAILED',
+        'UPLOAD_FAILED',
+        'BLOB_CREATION_FAILED',
+        'ATTACHMENT_FAILED',
+        'DETACHMENT_FAILED',
+    ].includes(blob.state ?? '');
+    return (jsxs("div", { className: `${styling.photoContainerClassName} ${isInFailedState ? 'ring-2 ring-red-500' : ''}`, title: blob.name ?? '', children: [jsx("img", { src: blob.previewUrl, alt: `${blob.name}`, className: `${styling.photoImageClassName} ${isInFailedState ? 'opacity-50' : ''}` }), !isInFailedState &&
+                blob.state !== 'ATTACHED' &&
                 syncBlobs &&
-                (blob.state !== 'BLOB_CREATED' || attachableId) && (jsx("div", { className: styling.loadingClassName, children: jsx(Loader, { className: 'text-white animate-spin w-8 h-8' }) })), blob.errorMessage && (jsx("div", { className: styling.errorClassName, children: blob.errorMessage })), jsx("button", { type: 'button', onClick: handleRemoveBlob, className: styling.removeButtonClassName, title: 'Remove blob', children: jsx(X, { className: 'w-4 h-4' }) }), mainBlobHash === blob.checksum && (jsx("div", { className: styling.mainPhotoBadgeClassName, children: "Main" })), mainBlobHash !== blob.checksum && blob.state === 'ATTACHED' && (jsx("button", { type: 'button', onClick: () => setMainBlobHash(blob.checksum), className: `
+                (blob.state !== 'BLOB_CREATED' || attachableId) && (jsx("div", { className: styling.loadingClassName, children: jsx(Loader, { className: 'text-white animate-spin w-8 h-8' }) })), blob.errorMessage && (jsxs("div", { className: styling.errorClassName, children: [jsx("div", { className: "text-xs mb-1", children: blob.errorMessage }), isInFailedState && (jsx("button", { type: 'button', onClick: handleRetry, className: "mt-1 px-2 py-1 text-xs bg-red-600 hover:bg-red-700 text-white rounded transition-colors", title: "Retry upload", children: "Retry" }))] })), jsx("button", { type: 'button', onClick: handleRemoveBlob, className: styling.removeButtonClassName, title: 'Remove blob', children: jsx(X, { className: 'w-4 h-4' }) }), mainBlobHash === blob.checksum && (jsx("div", { className: styling.mainPhotoBadgeClassName, children: "Main" })), mainBlobHash !== blob.checksum && blob.state === 'ATTACHED' && (jsx("button", { type: 'button', onClick: () => setMainBlobHash(blob.checksum), className: `
             absolute bottom-1 left-1
             px-2 py-0.5
             text-xs font-medium
