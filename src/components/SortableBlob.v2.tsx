@@ -26,17 +26,17 @@ interface SortableBlobProps {
 
 function SortableBlob({
   id,
-  photo,
+  blob,
   filesMap,
   isImmediateSyncMode,
   attachableId,
   attachableType,
-  mainPhotoHash,
-  setMainPhotoHash,
+  mainBlobHash,
+  setMainBlobHash,
   deleteFromFilesMap,
-  removePhotoByHash,
-  resetMainPhotoHash,
-  syncPhotos,
+  removeBlobByHash,
+  resetMainBlobHash,
+  syncBlobs,
   mutations,
   stateSetters,
   styling,
@@ -68,14 +68,14 @@ function SortableBlob({
         isImmediateSyncMode={isImmediateSyncMode}
         attachableId={attachableId}
         attachableType={attachableType}
-        file={filesMap.get(photo.checksum ?? '')}
-        photo={photo}
-        mainPhotoHash={mainPhotoHash ?? null}
-        setMainPhotoHash={setMainPhotoHash}
+        file={filesMap.get(blob.checksum ?? '')}
+        blob={blob}
+        mainBlobHash={mainBlobHash ?? null}
+        setMainBlobHash={setMainBlobHash}
         deleteFromFilesMap={deleteFromFilesMap}
-        removePhotoByHash={removePhotoByHash}
-        resetMainPhotoHash={resetMainPhotoHash}
-        syncPhotos={syncPhotos}
+        removeBlobByHash={removeBlobByHash}
+        resetMainBlobHash={resetMainBlobHash}
+        syncBlobs={syncBlobs}
         mutations={mutations}
         stateSetters={stateSetters}
         styling={styling}

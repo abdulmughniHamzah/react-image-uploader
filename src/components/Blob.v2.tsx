@@ -40,131 +40,131 @@ const Blob: React.FC<BlobProps> = ({
   attachableId,
   attachableType,
   file,
-  photo,
-  mainPhotoHash,
-  setMainPhotoHash,
+  blob,
+  mainBlobHash,
+  setMainBlobHash,
   deleteFromFilesMap,
-  removePhotoByHash,
-  resetMainPhotoHash,
-  syncPhotos,
+  removeBlobByHash,
+  resetMainBlobHash,
+  syncBlobs,
   mutations,
   stateSetters,
   styling,
 }) => {
-  const handleRemovePhoto = () => {
-    if (photo.state === 'ATTACHED') {
-      if (syncPhotos) {
+  const handleRemoveBlob = () => {
+    if (blob.state === 'ATTACHED') {
+      if (syncBlobs) {
         // If syncing, mark for detach to initiate the sync process
-        stateSetters.setPhotoState(photo.checksum!, 'MARKED_FOR_DETACH');
+        stateSetters.setBlobState(blob.checksum!, 'MARKED_FOR_DETACH');
       } else {
-        // If not syncing, just mark it DETACHED to remove the photo from the UI
-        stateSetters.setPhotoState(photo.checksum!, 'DETACHED');
+        // If not syncing, just mark it DETACHED to remove the blob from the UI
+        stateSetters.setBlobState(blob.checksum!, 'DETACHED');
       }
     } else {
-      stateSetters.setPhotoState(photo.checksum!, 'DETACHED');
+      stateSetters.setBlobState(blob.checksum!, 'DETACHED');
     }
   };
 
-  const unlinkPhoto = () => {
-    deleteFromFilesMap(photo.checksum!);
-    removePhotoByHash(photo.checksum!);
-    if (mainPhotoHash === photo.checksum) {
-      resetMainPhotoHash();
+  const unlinkBlob = () => {
+    deleteFromFilesMap(blob.checksum!);
+    removeBlobByHash(blob.checksum!);
+    if (mainBlobHash === blob.checksum) {
+      resetMainBlobHash();
     }
   };
 
-  // Photo lifecycle state machine with local state control
+  // Blob lifecycle state machine with local state control
   // Component is now completely agnostic - it just orchestrates and calls individual setters
   useEffect(() => {
     const handleStateTransition = async () => {
-      if (!photo.checksum) return;
+      if (!blob.checksum) return;
       
-      const hash = photo.checksum;
+      const hash = blob.checksum;
       
-      switch (photo.state) {
+      switch (blob.state) {
         case 'SELECTED_FOR_UPLOAD':
-          // Only start upload if syncPhotos is true
-          if (syncPhotos && photo.name && photo.mimeType && photo.size) {
-            stateSetters.setPhotoState(hash, 'UPLOADING_URL_GENERATING');
+          // Only start upload if syncBlobs is true
+          if (syncBlobs && blob.name && blob.mimeType && blob.size) {
+            stateSetters.setBlobState(hash, 'UPLOADING_URL_GENERATING');
             
             const result = await mutations.getUploadUrl({
               checksum: hash,
-              name: photo.name,
-              mimeType: photo.mimeType,
-              size: photo.size,
+              name: blob.name,
+              mimeType: blob.mimeType,
+              size: blob.size,
             });
             
             if (result.success) {
-              stateSetters.setPhotoUploadUrl(hash, result.data.uploadUrl);
-              stateSetters.setPhotoKey(hash, result.data.key);
+              stateSetters.setBlobUploadUrl(hash, result.data.uploadUrl);
+              stateSetters.setBlobKey(hash, result.data.key);
               stateSetters.setBlobErrorMessage(hash, null);
-              stateSetters.setPhotoState(hash, 'UPLOADING_URL_GENERATED');
+              stateSetters.setBlobState(hash, 'UPLOADING_URL_GENERATED');
             } else {
               stateSetters.setBlobErrorMessage(hash, result.error);
-              stateSetters.setPhotoState(hash, 'SELECTED_FOR_UPLOAD');
+              stateSetters.setBlobState(hash, 'SELECTED_FOR_UPLOAD');
             }
           }
           break;
 
         case 'UPLOADING_URL_GENERATED':
-          if (file && photo.uploadUrl) {
-            stateSetters.setPhotoState(hash, 'UPLOADING');
+          if (file && blob.uploadUrl) {
+            stateSetters.setBlobState(hash, 'UPLOADING');
             
-            const result = await mutations.directUpload(photo.uploadUrl, file);
+            const result = await mutations.directUpload(blob.uploadUrl, file);
             
             if (result.success) {
               stateSetters.setBlobErrorMessage(hash, null);
-              stateSetters.setPhotoState(hash, 'UPLOADED');
+              stateSetters.setBlobState(hash, 'UPLOADED');
             } else {
               stateSetters.setBlobErrorMessage(hash, result.error);
-              stateSetters.setPhotoState(hash, 'UPLOADING_URL_GENERATED');
+              stateSetters.setBlobState(hash, 'UPLOADING_URL_GENERATED');
             }
           }
           break;
 
         case 'UPLOADED':
-          if (photo.key && photo.name && photo.mimeType && photo.size) {
-            stateSetters.setPhotoState(hash, 'BLOB_CREATING');
+          if (blob.key && blob.name && blob.mimeType && blob.size) {
+            stateSetters.setBlobState(hash, 'BLOB_CREATING');
             
             const result = await mutations.createBlob({
-              key: photo.key,
+              key: blob.key,
               checksum: hash,
-              name: photo.name,
-              mimeType: photo.mimeType,
-              size: photo.size,
+              name: blob.name,
+              mimeType: blob.mimeType,
+              size: blob.size,
             });
             
             if (result.success) {
-              stateSetters.setPhotoBlobId(hash, result.data.id);
-              stateSetters.setPhotoKey(hash, result.data.key);
-              stateSetters.setPhotoPreviewUrl(hash, result.data.url);
+              stateSetters.setBlobId(hash, result.data.id);
+              stateSetters.setBlobKey(hash, result.data.key);
+              stateSetters.setBlobPreviewUrl(hash, result.data.url);
               stateSetters.setBlobErrorMessage(hash, null);
-              stateSetters.setPhotoState(hash, 'BLOB_CREATED');
+              stateSetters.setBlobState(hash, 'BLOB_CREATED');
             } else {
               stateSetters.setBlobErrorMessage(hash, result.error);
-              stateSetters.setPhotoState(hash, 'UPLOADED');
+              stateSetters.setBlobState(hash, 'UPLOADED');
             }
           }
           break;
 
         case 'BLOB_CREATED':
           // Only create attachment when isImmediateSyncMode is true and we have required data
-          if (isImmediateSyncMode && attachableId && photo.blobId && !photo.errorMessage) {
-            stateSetters.setPhotoState(hash, 'ATTACHING');
+          if (isImmediateSyncMode && attachableId && blob.blobId && !blob.errorMessage) {
+            stateSetters.setBlobState(hash, 'ATTACHING');
             
             const result = await mutations.createAttachment({
-              blobId: photo.blobId,
+              blobId: blob.blobId,
               attachableId,
               attachableType,
             });
             
             if (result.success) {
-              stateSetters.setPhotoAttachmentId(hash, result.data.id);
+              stateSetters.setBlobAttachmentId(hash, result.data.id);
               stateSetters.setBlobErrorMessage(hash, null);
-              stateSetters.setPhotoState(hash, 'ATTACHED');
+              stateSetters.setBlobState(hash, 'ATTACHED');
             } else {
               stateSetters.setBlobErrorMessage(hash, result.error);
-              stateSetters.setPhotoState(hash, 'BLOB_CREATED');
+              stateSetters.setBlobState(hash, 'BLOB_CREATED');
             }
           }
           break;
@@ -175,21 +175,21 @@ const Blob: React.FC<BlobProps> = ({
           break;
 
         case 'DETACHED':
-          unlinkPhoto();
+          unlinkBlob();
           break;
 
         case 'MARKED_FOR_DETACH':
-          if (syncPhotos && photo.attachmentId) {
-            stateSetters.setPhotoState(hash, 'DETACHING');
+          if (syncBlobs && blob.attachmentId) {
+            stateSetters.setBlobState(hash, 'DETACHING');
             
-            const result = await mutations.deleteAttachment(photo.attachmentId);
+            const result = await mutations.deleteAttachment(blob.attachmentId);
             
             if (result.success) {
               stateSetters.setBlobErrorMessage(hash, null);
-              stateSetters.setPhotoState(hash, 'DETACHED');
+              stateSetters.setBlobState(hash, 'DETACHED');
             } else {
               stateSetters.setBlobErrorMessage(hash, result.error);
-              stateSetters.setPhotoState(hash, 'MARKED_FOR_DETACH');
+              stateSetters.setBlobState(hash, 'MARKED_FOR_DETACH');
             }
           }
           break;
@@ -204,69 +204,69 @@ const Blob: React.FC<BlobProps> = ({
     file,
     attachableId,
     attachableType,
-    syncPhotos,
+    syncBlobs,
     isImmediateSyncMode,
-    photo.state,
-    photo.checksum,
-    photo.errorMessage,
+    blob.state,
+    blob.checksum,
+    blob.errorMessage,
     stateSetters,
     mutations,
   ]);
 
-  // Don't render photos that are being detached or detached
+  // Don't render blobs that are being detached or detached
   if (
-    (!syncPhotos && photo.state === 'DETACHING') ||
-    ['DETACHED', 'MARKED_FOR_DETACH'].includes(photo.state ?? '')
+    (!syncBlobs && blob.state === 'DETACHING') ||
+    ['DETACHED', 'MARKED_FOR_DETACH'].includes(blob.state ?? '')
   ) {
     return null;
   }
 
   return (
-    <div className={styling.photoContainerClassName} title={photo.name ?? ''}>
+    <div className={styling.photoContainerClassName} title={blob.name ?? ''}>
       <img
-        src={photo.previewUrl!}
-        alt={`${photo.name}`}
+        src={blob.previewUrl!}
+        alt={`${blob.name}`}
         className={styling.photoImageClassName}
       />
 
-      {/* Loading spinner - shows when photo is in progress */}
-      {photo.state !== 'ATTACHED' &&
-        syncPhotos &&
-        (photo.state !== 'BLOB_CREATED' || attachableId) && (
+      {/* Loading spinner - shows when blob is in progress */}
+      {blob.state !== 'ATTACHED' &&
+        syncBlobs &&
+        (blob.state !== 'BLOB_CREATED' || attachableId) && (
           <div className={styling.loadingClassName}>
             <Loader className='text-white animate-spin w-8 h-8' />
           </div>
         )}
 
       {/* Error message */}
-      {photo.errorMessage && (
+      {blob.errorMessage && (
         <div className={styling.errorClassName}>
-          {photo.errorMessage}
+          {blob.errorMessage}
         </div>
       )}
 
       {/* Remove button */}
       <button
         type='button'
-        onClick={handleRemovePhoto}
+        onClick={handleRemoveBlob}
         className={styling.removeButtonClassName}
-        title='Remove photo'
+        title='Remove blob'
       >
         <X className='w-4 h-4' />
       </button>
 
-      {/* Main photo badge */}
-      {mainPhotoHash === photo.checksum && (
+      {/* Main blob badge */}
+      {mainBlobHash === blob.checksum && (
         <div className={styling.mainPhotoBadgeClassName}>
           Main
         </div>
       )}
 
-      {/* Set as main photo button */}
-      {mainPhotoHash !== photo.checksum && photo.state === 'ATTACHED' && (
+      {/* Set as main blob button */}
+      {mainBlobHash !== blob.checksum && blob.state === 'ATTACHED' && (
         <button
           type='button'
-          onClick={() => setMainPhotoHash(photo.checksum!)}
+          onClick={() => setMainBlobHash(blob.checksum!)}
           className={`
             absolute bottom-1 left-1
             px-2 py-0.5
@@ -278,7 +278,7 @@ const Blob: React.FC<BlobProps> = ({
             transition-all
             z-10
           `.replace(/\s+/g, ' ').trim()}
-          title='Set as main photo'
+          title='Set as main blob'
         >
           Set Main
         </button>

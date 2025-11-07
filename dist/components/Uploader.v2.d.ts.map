@@ -1,1 +1,1 @@
-{"version":3,"file":"Uploader.v2.d.ts","sourceRoot":"","sources":["../../src/components/Uploader.v2.tsx"],"names":[],"mappings":"AAgBA,OAAO,EAAE,eAAe,EAAE,MAAM,gBAAgB,CAAC;AAYjD,eAAO,MAAM,QAAQ,GAAI,2zBAoCtB,eAAe,4CAyUjB,CAAC;AAEF,eAAe,QAAQ,CAAC"}
+{"version":3,"file":"Uploader.v2.d.ts","sourceRoot":"","sources":["../../src/components/Uploader.v2.tsx"],"names":[],"mappings":"AAgBA,OAAO,EAAE,eAAe,EAAE,MAAM,gBAAgB,CAAC;AAYjD,eAAO,MAAM,QAAQ,GAAI,uxBAmCtB,eAAe,4CAmXjB,CAAC;AAEF,eAAe,QAAQ,CAAC"}

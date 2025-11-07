@@ -45,7 +45,6 @@ export const Uploader = ({
   onMainBlobChange,
   onMainPhotoChange,
   mutations,
-  stateSetters: externalStateSetters,
   styling: customStyling,
   
   // Legacy props (for backward compatibility)
@@ -167,11 +166,18 @@ export const Uploader = ({
         size: blob.size!,
       });
 
-      updateBlobState(checksum, {
-        uploadUrl: result.data.uploadUrl,
-        key: result.data.key,
-        state: 'UPLOADING_URL_GENERATED',
-      });
+      if (result.success) {
+        updateBlobState(checksum, {
+          uploadUrl: result.data.uploadUrl,
+          key: result.data.key,
+          state: 'UPLOADING_URL_GENERATED',
+        });
+      } else {
+        updateBlobState(checksum, {
+          errorMessage: result.error,
+          state: 'SELECTED_FOR_UPLOAD',
+        });
+      }
     } catch (error: any) {
       updateBlobState(checksum, {
         errorMessage: error.message || 'Failed to get upload URL',
@@ -187,9 +193,16 @@ export const Uploader = ({
     try {
       updateBlobState(checksum, { state: 'UPLOADING' });
       
-      await mutations.directUpload(blob.uploadUrl, file);
+      const result = await mutations.directUpload(blob.uploadUrl, file);
 
-      updateBlobState(checksum, { state: 'UPLOADED' });
+      if (result.success) {
+        updateBlobState(checksum, { state: 'UPLOADED' });
+      } else {
+        updateBlobState(checksum, {
+          errorMessage: result.error,
+          state: 'UPLOADING_URL_GENERATED',
+        });
+      }
     } catch (error: any) {
       updateBlobState(checksum, {
         errorMessage: error.message || 'Failed to upload file',
@@ -213,10 +226,17 @@ export const Uploader = ({
         size: blob.size!,
       });
 
-      updateBlobState(checksum, {
-        blobId: result.data.id,
-        state: 'BLOB_CREATED',
-      });
+      if (result.success) {
+        updateBlobState(checksum, {
+          blobId: result.data.id,
+          state: 'BLOB_CREATED',
+        });
+      } else {
+        updateBlobState(checksum, {
+          errorMessage: result.error,
+          state: 'UPLOADED',
+        });
+      }
     } catch (error: any) {
       updateBlobState(checksum, {
         errorMessage: error.message || 'Failed to create blob',
@@ -238,43 +258,59 @@ export const Uploader = ({
         attachableType,
       });
 
-      updateBlobState(checksum, {
-        attachmentId: result.data.id,
-        state: 'ATTACHED',
-      });
+      if (result.success) {
+        updateBlobState(checksum, {
+          attachmentId: result.data.id,
+          state: 'ATTACHED',
+        });
+      } else {
+        updateBlobState(checksum, {
+          errorMessage: result.error,
+          state: 'BLOB_CREATED',
+        });
+      }
     } catch (error: any) {
-      updatePhotoState(checksum, {
+      updateBlobState(checksum, {
         errorMessage: error.message || 'Failed to create attachment',
         state: 'BLOB_CREATED', // Allow retry
       });
     }
-  }, [photos, mutations, attachableType, updatePhotoState]);
+  }, [blobs, mutations, attachableType, updateBlobState]);
 
   const wrappedDeleteAttachment = useCallback(async (checksum: string) => {
-    const photo = photos.find(p => p.checksum === checksum);
+    const blob = blobs.find(p => p.checksum === checksum);
     if (!blob || !blob.attachmentId) return;
 
     try {
       updateBlobState(checksum, { state: 'DETACHING' });
       
-      await mutations.deleteAttachment(blob.attachmentId);
+      const result = await mutations.deleteAttachment(blob.attachmentId);
 
-      updateBlobState(checksum, { state: 'DETACHED' });
+      if (result.success) {
+        updateBlobState(checksum, { state: 'DETACHED' });
+      } else {
+        updateBlobState(checksum, {
+          errorMessage: result.error,
+          state: 'ATTACHED',
+        });
+      }
     } catch (error: any) {
       updateBlobState(checksum, {
         errorMessage: error.message || 'Failed to delete attachment',
         state: 'ATTACHED',
       });
     }
-  }, [photos, mutations, updatePhotoState]);
+  }, [blobs, mutations, updateBlobState]);
 
   const wrappedGetPreviewUrl = useCallback(async (checksum: string) => {
-    const photo = photos.find(p => p.checksum === checksum);
+    const blob = blobs.find(p => p.checksum === checksum);
     if (!blob || !blob.key) return;
 
     try {
       const result = await mutations.getPreviewUrl(blob.key);
-      updateBlobState(checksum, { previewUrl: result.data.previewUrl });
+      if (result.success) {
+        updateBlobState(checksum, { previewUrl: result.data.previewUrl });
+      }
     } catch (error: any) {
       console.error('Failed to get preview URL:', error);
     }
@@ -381,6 +417,11 @@ export const Uploader = ({
                 isImmediateSyncMode={isImmediateSyncMode}
                 attachableId={attachableId}
                 attachableType={attachableType}
+                mainBlobHash={mainBlobHash}
+                setMainBlobHash={handleSetMainBlobHash}
+                deleteFromFilesMap={deleteFromFilesMap}
+                removeBlobByHash={removeBlobByHash}
+                resetMainBlobHash={handleResetMainBlobHash}
                 syncBlobs={shouldSyncBlobs}
                 mutations={mutations}
                 stateSetters={stateSetters}
