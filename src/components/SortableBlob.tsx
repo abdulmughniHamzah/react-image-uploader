@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import Blob, { BlobStateSetters } from './Blob.v2';
+import Blob, { BlobStateSetters } from './Blob';
 import { BlobType } from '../types/blob';
 import { StylingProps } from '../types/styling';
 import { MutationCallbacks } from '../types/mutations';

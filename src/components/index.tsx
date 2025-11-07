@@ -2,9 +2,9 @@
 // 'use client';
 
 import React from 'react';
-import Uploader from './Uploader.v2';
+import Uploader from './Uploader';
 import Skeleton from './Skeleton';
-import PropsType from './propsType.v2';
+import PropsType from './propsType';
 
 const ImageUploader: React.FC<PropsType> = (props) => {
   if (props.skeleton) {

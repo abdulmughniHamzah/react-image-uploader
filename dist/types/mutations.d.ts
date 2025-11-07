@@ -1,47 +1,91 @@
-export type Result<T> = {
+export type GetUploadUrlResult = {
     success: true;
-    data: T;
-} | {
-    success: false;
-    error: string;
-};
-export interface GetUploadUrlData {
+    hash: string;
     uploadUrl: string;
     key: string;
-}
-export interface CreateBlobData {
+} | {
+    success: false;
+    hash: string;
+    error: string;
+};
+export type DirectUploadResult = {
+    success: true;
+    hash: string;
+} | {
+    success: false;
+    hash: string;
+    error: string;
+};
+export type CreateBlobResult = {
+    success: true;
+    hash: string;
     id: number;
     key: string;
     url: string;
-}
-export interface CreateAttachmentData {
+} | {
+    success: false;
+    hash: string;
+    error: string;
+};
+export type CreateAttachmentResult = {
+    success: true;
+    hash: string;
     id: number;
-}
-export interface GetPreviewUrlData {
+} | {
+    success: false;
+    hash: string;
+    error: string;
+};
+export type DeleteAttachmentResult = {
+    success: true;
+    hash: string;
+} | {
+    success: false;
+    hash: string;
+    error: string;
+};
+export type GetPreviewUrlResult = {
+    success: true;
+    hash: string;
     previewUrl: string;
-}
+} | {
+    success: false;
+    hash: string;
+    error: string;
+};
 export interface MutationCallbacks {
     getUploadUrl: (params: {
-        checksum: string;
+        hash: string;
         name: string;
         mimeType: string;
         size: number;
-    }) => Promise<Result<GetUploadUrlData>>;
-    directUpload: (uploadUrl: string, file: File) => Promise<Result<void>>;
+    }) => Promise<GetUploadUrlResult>;
+    directUpload: (params: {
+        hash: string;
+        uploadUrl: string;
+        file: File;
+    }) => Promise<DirectUploadResult>;
     createBlob: (params: {
+        hash: string;
         key: string;
-        checksum: string;
         name: string;
         mimeType: string;
         size: number;
-    }) => Promise<Result<CreateBlobData>>;
+    }) => Promise<CreateBlobResult>;
     createAttachment: (params: {
+        hash: string;
         blobId: number;
         attachableId: number;
         attachableType: string;
-    }) => Promise<Result<CreateAttachmentData>>;
-    deleteAttachment: (attachmentId: number) => Promise<Result<void>>;
-    getPreviewUrl: (key: string) => Promise<Result<GetPreviewUrlData>>;
+    }) => Promise<CreateAttachmentResult>;
+    deleteAttachment: (params: {
+        hash: string;
+        attachmentId: number;
+    }) => Promise<DeleteAttachmentResult>;
+    getPreviewUrl: (params: {
+        hash: string;
+        key: string;
+    }) => Promise<GetPreviewUrlResult>;
 }
 export type PartialMutationCallbacks = Partial<MutationCallbacks>;
 //# sourceMappingURL=mutations.d.ts.map

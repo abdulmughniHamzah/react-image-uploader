@@ -4427,34 +4427,38 @@ const Blob = ({ isImmediateSyncMode, attachableId, attachableType, file, blob, m
                     if (syncBlobs && blob.name && blob.mimeType && blob.size) {
                         stateSetters.setBlobState(hash, 'UPLOADING_URL_GENERATING');
                         const result = await mutations.getUploadUrl({
-                            checksum: hash,
+                            hash,
                             name: blob.name,
                             mimeType: blob.mimeType,
                             size: blob.size,
                         });
                         if (result.success) {
-                            stateSetters.setBlobUploadUrl(hash, result.data.uploadUrl);
-                            stateSetters.setBlobKey(hash, result.data.key);
-                            stateSetters.setBlobErrorMessage(hash, null);
-                            stateSetters.setBlobState(hash, 'UPLOADING_URL_GENERATED');
+                            stateSetters.setBlobUploadUrl(result.hash, result.uploadUrl);
+                            stateSetters.setBlobKey(result.hash, result.key);
+                            stateSetters.setBlobErrorMessage(result.hash, null);
+                            stateSetters.setBlobState(result.hash, 'UPLOADING_URL_GENERATED');
                         }
                         else {
-                            stateSetters.setBlobErrorMessage(hash, result.error);
-                            stateSetters.setBlobState(hash, 'SELECTED_FOR_UPLOAD');
+                            stateSetters.setBlobErrorMessage(result.hash, result.error);
+                            stateSetters.setBlobState(result.hash, 'SELECTED_FOR_UPLOAD');
                         }
                     }
                     break;
                 case 'UPLOADING_URL_GENERATED':
                     if (file && blob.uploadUrl) {
                         stateSetters.setBlobState(hash, 'UPLOADING');
-                        const result = await mutations.directUpload(blob.uploadUrl, file);
+                        const result = await mutations.directUpload({
+                            hash,
+                            uploadUrl: blob.uploadUrl,
+                            file,
+                        });
                         if (result.success) {
-                            stateSetters.setBlobErrorMessage(hash, null);
-                            stateSetters.setBlobState(hash, 'UPLOADED');
+                            stateSetters.setBlobErrorMessage(result.hash, null);
+                            stateSetters.setBlobState(result.hash, 'UPLOADED');
                         }
                         else {
-                            stateSetters.setBlobErrorMessage(hash, result.error);
-                            stateSetters.setBlobState(hash, 'UPLOADING_URL_GENERATED');
+                            stateSetters.setBlobErrorMessage(result.hash, result.error);
+                            stateSetters.setBlobState(result.hash, 'UPLOADING_URL_GENERATED');
                         }
                     }
                     break;
@@ -4462,22 +4466,22 @@ const Blob = ({ isImmediateSyncMode, attachableId, attachableType, file, blob, m
                     if (blob.key && blob.name && blob.mimeType && blob.size) {
                         stateSetters.setBlobState(hash, 'BLOB_CREATING');
                         const result = await mutations.createBlob({
+                            hash,
                             key: blob.key,
-                            checksum: hash,
                             name: blob.name,
                             mimeType: blob.mimeType,
                             size: blob.size,
                         });
                         if (result.success) {
-                            stateSetters.setBlobId(hash, result.data.id);
-                            stateSetters.setBlobKey(hash, result.data.key);
-                            stateSetters.setBlobPreviewUrl(hash, result.data.url);
-                            stateSetters.setBlobErrorMessage(hash, null);
-                            stateSetters.setBlobState(hash, 'BLOB_CREATED');
+                            stateSetters.setBlobId(result.hash, result.id);
+                            stateSetters.setBlobKey(result.hash, result.key);
+                            stateSetters.setBlobPreviewUrl(result.hash, result.url);
+                            stateSetters.setBlobErrorMessage(result.hash, null);
+                            stateSetters.setBlobState(result.hash, 'BLOB_CREATED');
                         }
                         else {
-                            stateSetters.setBlobErrorMessage(hash, result.error);
-                            stateSetters.setBlobState(hash, 'UPLOADED');
+                            stateSetters.setBlobErrorMessage(result.hash, result.error);
+                            stateSetters.setBlobState(result.hash, 'UPLOADED');
                         }
                     }
                     break;
@@ -4485,18 +4489,19 @@ const Blob = ({ isImmediateSyncMode, attachableId, attachableType, file, blob, m
                     if (isImmediateSyncMode && attachableId && blob.blobId && !blob.errorMessage) {
                         stateSetters.setBlobState(hash, 'ATTACHING');
                         const result = await mutations.createAttachment({
+                            hash,
                             blobId: blob.blobId,
                             attachableId,
                             attachableType,
                         });
                         if (result.success) {
-                            stateSetters.setBlobAttachmentId(hash, result.data.id);
-                            stateSetters.setBlobErrorMessage(hash, null);
-                            stateSetters.setBlobState(hash, 'ATTACHED');
+                            stateSetters.setBlobAttachmentId(result.hash, result.id);
+                            stateSetters.setBlobErrorMessage(result.hash, null);
+                            stateSetters.setBlobState(result.hash, 'ATTACHED');
                         }
                         else {
-                            stateSetters.setBlobErrorMessage(hash, result.error);
-                            stateSetters.setBlobState(hash, 'BLOB_CREATED');
+                            stateSetters.setBlobErrorMessage(result.hash, result.error);
+                            stateSetters.setBlobState(result.hash, 'BLOB_CREATED');
                         }
                     }
                     break;
@@ -4508,14 +4513,17 @@ const Blob = ({ isImmediateSyncMode, attachableId, attachableType, file, blob, m
                 case 'MARKED_FOR_DETACH':
                     if (syncBlobs && blob.attachmentId) {
                         stateSetters.setBlobState(hash, 'DETACHING');
-                        const result = await mutations.deleteAttachment(blob.attachmentId);
+                        const result = await mutations.deleteAttachment({
+                            hash,
+                            attachmentId: blob.attachmentId,
+                        });
                         if (result.success) {
-                            stateSetters.setBlobErrorMessage(hash, null);
-                            stateSetters.setBlobState(hash, 'DETACHED');
+                            stateSetters.setBlobErrorMessage(result.hash, null);
+                            stateSetters.setBlobState(result.hash, 'DETACHED');
                         }
                         else {
-                            stateSetters.setBlobErrorMessage(hash, result.error);
-                            stateSetters.setBlobState(hash, 'MARKED_FOR_DETACH');
+                            stateSetters.setBlobErrorMessage(result.hash, result.error);
+                            stateSetters.setBlobState(result.hash, 'MARKED_FOR_DETACH');
                         }
                     }
                     break;
@@ -4704,15 +4712,15 @@ const Uploader = ({ isImmediateSyncMode = false, maxBlobs, maxPhotos, syncBlobs,
         try {
             updateBlobState(checksum, { state: 'UPLOADING_URL_GENERATING' });
             const result = await mutations.getUploadUrl({
-                checksum,
+                hash: checksum,
                 name: blob.name,
                 mimeType: blob.mimeType,
                 size: blob.size,
             });
             if (result.success) {
                 updateBlobState(checksum, {
-                    uploadUrl: result.data.uploadUrl,
-                    key: result.data.key,
+                    uploadUrl: result.uploadUrl,
+                    key: result.key,
                     state: 'UPLOADING_URL_GENERATED',
                 });
             }
@@ -4736,7 +4744,11 @@ const Uploader = ({ isImmediateSyncMode = false, maxBlobs, maxPhotos, syncBlobs,
             return;
         try {
             updateBlobState(checksum, { state: 'UPLOADING' });
-            const result = await mutations.directUpload(blob.uploadUrl, file);
+            const result = await mutations.directUpload({
+                hash: checksum,
+                uploadUrl: blob.uploadUrl,
+                file,
+            });
             if (result.success) {
                 updateBlobState(checksum, { state: 'UPLOADED' });
             }
@@ -4761,15 +4773,15 @@ const Uploader = ({ isImmediateSyncMode = false, maxBlobs, maxPhotos, syncBlobs,
         try {
             updateBlobState(checksum, { state: 'BLOB_CREATING' });
             const result = await mutations.createBlob({
+                hash: checksum,
                 key: blob.key,
-                checksum,
                 name: blob.name,
                 mimeType: blob.mimeType,
                 size: blob.size,
             });
             if (result.success) {
                 updateBlobState(checksum, {
-                    blobId: result.data.id,
+                    blobId: result.id,
                     state: 'BLOB_CREATED',
                 });
             }
@@ -4794,13 +4806,14 @@ const Uploader = ({ isImmediateSyncMode = false, maxBlobs, maxPhotos, syncBlobs,
         try {
             updateBlobState(checksum, { state: 'ATTACHING' });
             const result = await mutations.createAttachment({
+                hash: checksum,
                 blobId: blob.blobId,
                 attachableId: attId,
                 attachableType,
             });
             if (result.success) {
                 updateBlobState(checksum, {
-                    attachmentId: result.data.id,
+                    attachmentId: result.id,
                     state: 'ATTACHED',
                 });
             }
@@ -4824,7 +4837,10 @@ const Uploader = ({ isImmediateSyncMode = false, maxBlobs, maxPhotos, syncBlobs,
             return;
         try {
             updateBlobState(checksum, { state: 'DETACHING' });
-            const result = await mutations.deleteAttachment(blob.attachmentId);
+            const result = await mutations.deleteAttachment({
+                hash: checksum,
+                attachmentId: blob.attachmentId,
+            });
             if (result.success) {
                 updateBlobState(checksum, { state: 'DETACHED' });
             }
@@ -4847,9 +4863,12 @@ const Uploader = ({ isImmediateSyncMode = false, maxBlobs, maxPhotos, syncBlobs,
         if (!blob || !blob.key)
             return;
         try {
-            const result = await mutations.getPreviewUrl(blob.key);
+            const result = await mutations.getPreviewUrl({
+                hash: checksum,
+                key: blob.key,
+            });
             if (result.success) {
-                updateBlobState(checksum, { previewUrl: result.data.previewUrl });
+                updateBlobState(checksum, { previewUrl: result.previewUrl });
             }
         }
         catch (error) {

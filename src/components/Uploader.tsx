@@ -13,8 +13,8 @@ import {
 } from '@dnd-kit/sortable';
 import { BlobType, PhotoType } from '../types/blob'; // PhotoType is alias for backward compatibility
 import { calculateChecksum } from '../utils/checksum';
-import SortableBlob from './SortableBlob.v2';
-import { LoadedPropsType } from './propsType.v2';
+import SortableBlob from './SortableBlob';
+import { LoadedPropsType } from './propsType';
 import { mergeStyling } from '../types/styling';
 
 /**
@@ -160,7 +160,7 @@ export const Uploader = ({
       updateBlobState(checksum, { state: 'UPLOADING_URL_GENERATING' });
       
       const result = await mutations.getUploadUrl({
-        checksum,
+        hash: checksum,
         name: blob.name!,
         mimeType: blob.mimeType!,
         size: blob.size!,
@@ -168,8 +168,8 @@ export const Uploader = ({
 
       if (result.success) {
         updateBlobState(checksum, {
-          uploadUrl: result.data.uploadUrl,
-          key: result.data.key,
+          uploadUrl: result.uploadUrl,
+          key: result.key,
           state: 'UPLOADING_URL_GENERATED',
         });
       } else {
@@ -193,7 +193,11 @@ export const Uploader = ({
     try {
       updateBlobState(checksum, { state: 'UPLOADING' });
       
-      const result = await mutations.directUpload(blob.uploadUrl, file);
+      const result = await mutations.directUpload({
+        hash: checksum,
+        uploadUrl: blob.uploadUrl,
+        file,
+      });
 
       if (result.success) {
         updateBlobState(checksum, { state: 'UPLOADED' });
@@ -219,8 +223,8 @@ export const Uploader = ({
       updateBlobState(checksum, { state: 'BLOB_CREATING' });
       
       const result = await mutations.createBlob({
+        hash: checksum,
         key: blob.key,
-        checksum,
         name: blob.name!,
         mimeType: blob.mimeType!,
         size: blob.size!,
@@ -228,7 +232,7 @@ export const Uploader = ({
 
       if (result.success) {
         updateBlobState(checksum, {
-          blobId: result.data.id,
+          blobId: result.id,
           state: 'BLOB_CREATED',
         });
       } else {
@@ -253,6 +257,7 @@ export const Uploader = ({
       updateBlobState(checksum, { state: 'ATTACHING' });
       
       const result = await mutations.createAttachment({
+        hash: checksum,
         blobId: blob.blobId,
         attachableId: attId,
         attachableType,
@@ -260,7 +265,7 @@ export const Uploader = ({
 
       if (result.success) {
         updateBlobState(checksum, {
-          attachmentId: result.data.id,
+          attachmentId: result.id,
           state: 'ATTACHED',
         });
       } else {
@@ -284,7 +289,10 @@ export const Uploader = ({
     try {
       updateBlobState(checksum, { state: 'DETACHING' });
       
-      const result = await mutations.deleteAttachment(blob.attachmentId);
+      const result = await mutations.deleteAttachment({
+        hash: checksum,
+        attachmentId: blob.attachmentId,
+      });
 
       if (result.success) {
         updateBlobState(checksum, { state: 'DETACHED' });
@@ -307,9 +315,12 @@ export const Uploader = ({
     if (!blob || !blob.key) return;
 
     try {
-      const result = await mutations.getPreviewUrl(blob.key);
+      const result = await mutations.getPreviewUrl({
+        hash: checksum,
+        key: blob.key,
+      });
       if (result.success) {
-        updateBlobState(checksum, { previewUrl: result.data.previewUrl });
+        updateBlobState(checksum, { previewUrl: result.previewUrl });
       }
     } catch (error: any) {
       console.error('Failed to get preview URL:', error);
