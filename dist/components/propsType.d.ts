@@ -10,8 +10,10 @@ export type LoadedPropsType = {
     maxPhotos?: number;
     attachableId: number | null;
     attachableType?: string;
+    instantUpload?: boolean;
     syncBlobs?: boolean;
     syncPhotos?: boolean;
+    instantAttach?: boolean;
     isImmediateSyncMode?: boolean;
     processRunning?: boolean;
     initialBlobs?: BlobType[];

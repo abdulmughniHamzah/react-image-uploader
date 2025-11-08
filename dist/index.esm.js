@@ -4396,10 +4396,10 @@ const X = createLucideIcon("X", [
   ["path", { d: "m6 6 12 12", key: "d8bk6v" }]
 ]);
 
-const Blob = ({ isImmediateSyncMode, attachableId, attachableType, file, blob, mainBlobHash, setMainBlobHash, deleteFromFilesMap, removeBlobByHash, resetMainBlobHash, syncBlobs, mutations, stateSetters, styling, }) => {
+const Blob = ({ instantUpload, instantAttach, attachableId, attachableType, file, blob, mainBlobHash, setMainBlobHash, deleteFromFilesMap, removeBlobByHash, resetMainBlobHash, mutations, stateSetters, styling, }) => {
     const handleRemoveBlob = () => {
         if (blob.state === 'ATTACHED') {
-            if (syncBlobs) {
+            if (instantUpload) {
                 stateSetters.setBlobState(blob.checksum, 'MARKED_FOR_DETACH');
             }
             else {
@@ -4445,7 +4445,7 @@ const Blob = ({ isImmediateSyncMode, attachableId, attachableType, file, blob, m
             const hash = blob.checksum;
             switch (blob.state) {
                 case 'SELECTED_FOR_UPLOAD':
-                    if (syncBlobs && blob.name && blob.mimeType && blob.size) {
+                    if (instantUpload && blob.name && blob.mimeType && blob.size) {
                         stateSetters.setBlobState(hash, 'UPLOADING_URL_GENERATING');
                         const result = await mutations.getUploadUrl({
                             hash,
@@ -4507,7 +4507,7 @@ const Blob = ({ isImmediateSyncMode, attachableId, attachableType, file, blob, m
                     }
                     break;
                 case 'BLOB_CREATED':
-                    if (isImmediateSyncMode && attachableId && blob.blobId && !blob.errorMessage) {
+                    if (instantAttach && attachableId && blob.blobId && !blob.errorMessage) {
                         stateSetters.setBlobState(hash, 'ATTACHING');
                         const result = await mutations.createAttachment({
                             hash,
@@ -4532,7 +4532,7 @@ const Blob = ({ isImmediateSyncMode, attachableId, attachableType, file, blob, m
                     unlinkBlob();
                     break;
                 case 'MARKED_FOR_DETACH':
-                    if (syncBlobs && blob.attachmentId) {
+                    if (instantUpload && blob.attachmentId) {
                         stateSetters.setBlobState(hash, 'DETACHING');
                         const result = await mutations.deleteAttachment({
                             hash,
@@ -4555,15 +4555,15 @@ const Blob = ({ isImmediateSyncMode, attachableId, attachableType, file, blob, m
         file,
         attachableId,
         attachableType,
-        syncBlobs,
-        isImmediateSyncMode,
+        instantUpload,
+        instantAttach,
         blob.state,
         blob.checksum,
         blob.errorMessage,
         stateSetters,
         mutations,
     ]);
-    if ((!syncBlobs && blob.state === 'DETACHING') ||
+    if ((!instantUpload && blob.state === 'DETACHING') ||
         ['DETACHED', 'MARKED_FOR_DETACH'].includes(blob.state ?? '')) {
         return null;
     }
@@ -4576,11 +4576,11 @@ const Blob = ({ isImmediateSyncMode, attachableId, attachableType, file, blob, m
     ].includes(blob.state ?? '');
     return (jsxs("div", { className: `${styling.blobContainerClassName} ${isInFailedState ? styling.blobContainerFailedClassName : ''}`, title: blob.name ?? '', children: [jsx("img", { src: blob.previewUrl, alt: `${blob.name}`, className: `${styling.blobImageClassName} ${isInFailedState ? styling.blobImageFailedClassName : ''}` }), !isInFailedState &&
                 blob.state !== 'ATTACHED' &&
-                syncBlobs &&
+                instantUpload &&
                 (blob.state !== 'BLOB_CREATED' || attachableId) && (jsx("div", { className: styling.loadingContainerClassName, children: jsx(Loader, { className: styling.loadingSpinnerClassName }) })), blob.errorMessage && (jsxs("div", { className: styling.errorContainerClassName, children: [jsx("div", { className: styling.errorMessageClassName, children: blob.errorMessage }), isInFailedState && (jsx("button", { type: 'button', onClick: handleRetry, className: styling.retryButtonClassName, title: "Retry upload", children: "Retry" }))] })), jsx("button", { type: 'button', onClick: handleRemoveBlob, className: styling.removeButtonClassName, title: 'Remove blob', children: jsx(X, { className: styling.removeButtonIconClassName }) }), mainBlobHash === blob.checksum && (jsx("div", { className: styling.mainBlobBadgeClassName, children: "Main" })), mainBlobHash !== blob.checksum && blob.state === 'ATTACHED' && (jsx("button", { type: 'button', onClick: () => setMainBlobHash(blob.checksum), className: styling.setMainButtonClassName, title: 'Set as main blob', children: "Set Main" }))] }));
 };
 
-function SortableBlob({ id, blob, filesMap, isImmediateSyncMode, attachableId, attachableType, mainBlobHash, setMainBlobHash, deleteFromFilesMap, removeBlobByHash, resetMainBlobHash, syncBlobs, mutations, stateSetters, styling, }) {
+function SortableBlob({ id, blob, filesMap, instantUpload, instantAttach, attachableId, attachableType, mainBlobHash, setMainBlobHash, deleteFromFilesMap, removeBlobByHash, resetMainBlobHash, mutations, stateSetters, styling, }) {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging, } = useSortable({ id });
     const style = {
         transform: CSS.Transform.toString(transform),
@@ -4588,7 +4588,7 @@ function SortableBlob({ id, blob, filesMap, isImmediateSyncMode, attachableId, a
         zIndex: isDragging ? 999 : undefined,
         opacity: isDragging ? 0.5 : 1,
     };
-    return (jsx("div", { ref: setNodeRef, style: style, ...attributes, ...listeners, children: jsx(Blob, { isImmediateSyncMode: isImmediateSyncMode, attachableId: attachableId, attachableType: attachableType, file: filesMap.get(blob.checksum ?? ''), blob: blob, mainBlobHash: mainBlobHash ?? null, setMainBlobHash: setMainBlobHash, deleteFromFilesMap: deleteFromFilesMap, removeBlobByHash: removeBlobByHash, resetMainBlobHash: resetMainBlobHash, syncBlobs: syncBlobs, mutations: mutations, stateSetters: stateSetters, styling: styling }) }));
+    return (jsx("div", { ref: setNodeRef, style: style, ...attributes, ...listeners, children: jsx(Blob, { instantUpload: instantUpload, instantAttach: instantAttach, attachableId: attachableId, attachableType: attachableType, file: filesMap.get(blob.checksum ?? ''), blob: blob, mainBlobHash: mainBlobHash ?? null, setMainBlobHash: setMainBlobHash, deleteFromFilesMap: deleteFromFilesMap, removeBlobByHash: removeBlobByHash, resetMainBlobHash: resetMainBlobHash, mutations: mutations, stateSetters: stateSetters, styling: styling }) }));
 }
 
 const baseDefaultStyling = {
@@ -4719,9 +4719,10 @@ function mergeStyling(custom) {
     };
 }
 
-const Uploader = ({ isImmediateSyncMode = false, maxBlobs, maxPhotos, syncBlobs, syncPhotos, initialBlobs, initialPhotos, onBlobsChange, onPhotosChange, attachableId, attachableType = 'Offer', processRunning = false, mainBlobHash: externalMainBlobHash, mainPhotoHash: externalMainPhotoHash_legacy, onMainBlobChange, onMainPhotoChange, mutations, styling: customStyling, photos: legacyPhotos, addPhoto: legacyAddPhoto, removePhotoByHash: legacyRemovePhotoByHash, setMainPhotoHash: legacySetMainPhotoHash, getUploadUrl: legacyGetUploadUrl, getPreviewUrl: legacyGetPreviewUrl, directUpload: legacyDirectUpload, createBlob: legacyCreateBlob, createAttachment: legacyCreateAttachment, deleteAttachment: legacyDeleteAttachment, resetMainPhotoHash: legacyResetMainPhotoHash, setPhotoState: legacySetPhotoState, setPhotos: legacySetPhotos, }) => {
+const Uploader = ({ instantUpload, instantAttach = false, maxBlobs, maxPhotos, syncBlobs, syncPhotos, isImmediateSyncMode, initialBlobs, initialPhotos, onBlobsChange, onPhotosChange, attachableId, attachableType = 'Offer', processRunning = false, mainBlobHash: externalMainBlobHash, mainPhotoHash: externalMainPhotoHash_legacy, onMainBlobChange, onMainPhotoChange, mutations, styling: customStyling, photos: legacyPhotos, addPhoto: legacyAddPhoto, removePhotoByHash: legacyRemovePhotoByHash, setMainPhotoHash: legacySetMainPhotoHash, getUploadUrl: legacyGetUploadUrl, getPreviewUrl: legacyGetPreviewUrl, directUpload: legacyDirectUpload, createBlob: legacyCreateBlob, createAttachment: legacyCreateAttachment, deleteAttachment: legacyDeleteAttachment, resetMainPhotoHash: legacyResetMainPhotoHash, setPhotoState: legacySetPhotoState, setPhotos: legacySetPhotos, }) => {
     const maxItems = maxBlobs ?? maxPhotos ?? 10;
-    const shouldSyncBlobs = syncBlobs ?? syncPhotos ?? false;
+    const shouldUploadInstantly = instantUpload ?? syncBlobs ?? syncPhotos ?? true;
+    const shouldAttachInstantly = instantAttach ?? isImmediateSyncMode ?? false;
     const initialItems = initialBlobs ?? initialPhotos ?? legacyPhotos ?? [];
     const externalMain = externalMainBlobHash ?? externalMainPhotoHash_legacy ?? null;
     const onItemsChange = onBlobsChange ?? onPhotosChange;
@@ -5013,7 +5014,7 @@ const Uploader = ({ isImmediateSyncMode = false, maxBlobs, maxPhotos, syncBlobs,
                                     e.target.value = '';
                                 }, className: 'hidden' })] })), blobs
                         .filter((blob) => blob.checksum)
-                        .map((blob) => (jsx(SortableBlob, { id: blob.checksum ?? '', blob: blob, filesMap: filesMap, isImmediateSyncMode: isImmediateSyncMode, attachableId: attachableId, attachableType: attachableType, mainBlobHash: mainBlobHash, setMainBlobHash: handleSetMainBlobHash, deleteFromFilesMap: deleteFromFilesMap, removeBlobByHash: removeBlobByHash, resetMainBlobHash: handleResetMainBlobHash, syncBlobs: shouldSyncBlobs, mutations: mutations, stateSetters: stateSetters, styling: styling }, blob.checksum ?? '')))] }) }) }));
+                        .map((blob) => (jsx(SortableBlob, { id: blob.checksum ?? '', blob: blob, filesMap: filesMap, instantUpload: shouldUploadInstantly, instantAttach: shouldAttachInstantly, attachableId: attachableId, attachableType: attachableType, mainBlobHash: mainBlobHash, setMainBlobHash: handleSetMainBlobHash, deleteFromFilesMap: deleteFromFilesMap, removeBlobByHash: removeBlobByHash, resetMainBlobHash: handleResetMainBlobHash, mutations: mutations, stateSetters: stateSetters, styling: styling }, blob.checksum ?? '')))] }) }) }));
 };
 
 export { Uploader as BlobUploader, Uploader as ImageUploader, calculateChecksum, Uploader as default };

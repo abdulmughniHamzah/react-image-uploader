@@ -11,7 +11,8 @@ export interface BlobStateSetters {
     setBlobErrorMessage: (hash: string, errorMessage: string | null) => void;
 }
 interface BlobProps {
-    isImmediateSyncMode: boolean;
+    instantUpload: boolean;
+    instantAttach: boolean;
     blob: BlobType;
     attachableId: number | null;
     attachableType: string;
@@ -21,7 +22,6 @@ interface BlobProps {
     deleteFromFilesMap: (hash: string) => void;
     removeBlobByHash: (hash: string) => void;
     resetMainBlobHash: () => void;
-    syncBlobs: boolean;
     mutations: MutationCallbacks;
     stateSetters: BlobStateSetters;
     styling: Required<StylingProps>;

@@ -19,7 +19,8 @@ export interface BlobStateSetters {
 }
 
 interface BlobProps {
-  isImmediateSyncMode: boolean;
+  instantUpload: boolean;
+  instantAttach: boolean;
   blob: BlobType;
   attachableId: number | null;
   attachableType: string;
@@ -29,14 +30,14 @@ interface BlobProps {
   deleteFromFilesMap: (hash: string) => void;
   removeBlobByHash: (hash: string) => void;
   resetMainBlobHash: () => void;
-  syncBlobs: boolean;
   mutations: MutationCallbacks;
   stateSetters: BlobStateSetters;
   styling: Required<StylingProps>;
 }
 
 const Blob: React.FC<BlobProps> = ({
-  isImmediateSyncMode,
+  instantUpload,
+  instantAttach,
   attachableId,
   attachableType,
   file,
@@ -46,14 +47,13 @@ const Blob: React.FC<BlobProps> = ({
   deleteFromFilesMap,
   removeBlobByHash,
   resetMainBlobHash,
-  syncBlobs,
   mutations,
   stateSetters,
   styling,
 }) => {
   const handleRemoveBlob = () => {
     if (blob.state === 'ATTACHED') {
-      if (syncBlobs) {
+      if (instantUpload) {
         // If syncing, mark for detach to initiate the sync process
         stateSetters.setBlobState(blob.checksum!, 'MARKED_FOR_DETACH');
       } else {
@@ -106,8 +106,8 @@ const Blob: React.FC<BlobProps> = ({
       
       switch (blob.state) {
         case 'SELECTED_FOR_UPLOAD':
-          // Only start upload if syncBlobs is true
-          if (syncBlobs && blob.name && blob.mimeType && blob.size) {
+          // Only start upload if instantUpload is true
+          if (instantUpload && blob.name && blob.mimeType && blob.size) {
             stateSetters.setBlobState(hash, 'UPLOADING_URL_GENERATING');
             
             const result = await mutations.getUploadUrl({
@@ -175,8 +175,8 @@ const Blob: React.FC<BlobProps> = ({
           break;
 
         case 'BLOB_CREATED':
-          // Only create attachment when isImmediateSyncMode is true and we have required data
-          if (isImmediateSyncMode && attachableId && blob.blobId && !blob.errorMessage) {
+          // Only create attachment when instantAttach is true and we have required data
+          if (instantAttach && attachableId && blob.blobId && !blob.errorMessage) {
             stateSetters.setBlobState(hash, 'ATTACHING');
             
             const result = await mutations.createAttachment({
@@ -207,7 +207,7 @@ const Blob: React.FC<BlobProps> = ({
           break;
 
         case 'MARKED_FOR_DETACH':
-          if (syncBlobs && blob.attachmentId) {
+          if (instantUpload && blob.attachmentId) {
             stateSetters.setBlobState(hash, 'DETACHING');
             
             const result = await mutations.deleteAttachment({
@@ -235,8 +235,8 @@ const Blob: React.FC<BlobProps> = ({
     file,
     attachableId,
     attachableType,
-    syncBlobs,
-    isImmediateSyncMode,
+    instantUpload,
+    instantAttach,
     blob.state,
     blob.checksum,
     blob.errorMessage,
@@ -246,7 +246,7 @@ const Blob: React.FC<BlobProps> = ({
 
   // Don't render blobs that are being detached or detached
   if (
-    (!syncBlobs && blob.state === 'DETACHING') ||
+    (!instantUpload && blob.state === 'DETACHING') ||
     ['DETACHED', 'MARKED_FOR_DETACH'].includes(blob.state ?? '')
   ) {
     return null;
@@ -275,7 +275,7 @@ const Blob: React.FC<BlobProps> = ({
       {/* Loading spinner - shows when blob is in progress (but not in failed state) */}
       {!isInFailedState &&
         blob.state !== 'ATTACHED' &&
-        syncBlobs &&
+        instantUpload &&
         (blob.state !== 'BLOB_CREATED' || attachableId) && (
           <div className={styling.loadingContainerClassName}>
             <Loader className={styling.loadingSpinnerClassName} />

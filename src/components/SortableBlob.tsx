@@ -10,7 +10,8 @@ interface SortableBlobProps {
   id: string;
   blob: BlobType;
   filesMap: Map<string, File>;
-  isImmediateSyncMode: boolean;
+  instantUpload: boolean;
+  instantAttach: boolean;
   attachableId: number | null;
   attachableType: string;
   mainBlobHash: string | null;
@@ -18,7 +19,6 @@ interface SortableBlobProps {
   deleteFromFilesMap: (hash: string) => void;
   removeBlobByHash: (hash: string) => void;
   resetMainBlobHash: () => void;
-  syncBlobs: boolean;
   mutations: MutationCallbacks;
   stateSetters: BlobStateSetters;
   styling: Required<StylingProps>;
@@ -28,7 +28,8 @@ function SortableBlob({
   id,
   blob,
   filesMap,
-  isImmediateSyncMode,
+  instantUpload,
+  instantAttach,
   attachableId,
   attachableType,
   mainBlobHash,
@@ -36,7 +37,6 @@ function SortableBlob({
   deleteFromFilesMap,
   removeBlobByHash,
   resetMainBlobHash,
-  syncBlobs,
   mutations,
   stateSetters,
   styling,
@@ -65,7 +65,8 @@ function SortableBlob({
       {...listeners}
     >
       <Blob
-        isImmediateSyncMode={isImmediateSyncMode}
+        instantUpload={instantUpload}
+        instantAttach={instantAttach}
         attachableId={attachableId}
         attachableType={attachableType}
         file={filesMap.get(blob.checksum ?? '')}
@@ -75,7 +76,6 @@ function SortableBlob({
         deleteFromFilesMap={deleteFromFilesMap}
         removeBlobByHash={removeBlobByHash}
         resetMainBlobHash={resetMainBlobHash}
-        syncBlobs={syncBlobs}
         mutations={mutations}
         stateSetters={stateSetters}
         styling={styling}

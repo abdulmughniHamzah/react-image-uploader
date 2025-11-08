@@ -27,12 +27,15 @@ import { mergeStyling } from '../types/styling';
  * - syncPhotos controls whether to create attachments after blob creation
  */
 export const Uploader = ({
-  isImmediateSyncMode = false,
+  // New prop names (clear and explicit)
+  instantUpload,
+  instantAttach = false,
   // Support both new and old prop names for backward compatibility
   maxBlobs,
   maxPhotos,
   syncBlobs,
   syncPhotos,
+  isImmediateSyncMode,
   initialBlobs,
   initialPhotos,
   onBlobsChange,
@@ -64,7 +67,8 @@ export const Uploader = ({
 }: LoadedPropsType) => {
   // Normalize props (new names take precedence, fall back to old names)
   const maxItems = maxBlobs ?? maxPhotos ?? 10;
-  const shouldSyncBlobs = syncBlobs ?? syncPhotos ?? false;
+  const shouldUploadInstantly = instantUpload ?? syncBlobs ?? syncPhotos ?? true;
+  const shouldAttachInstantly = instantAttach ?? isImmediateSyncMode ?? false;
   const initialItems = initialBlobs ?? initialPhotos ?? legacyPhotos ?? [];
   const externalMain = externalMainBlobHash ?? externalMainPhotoHash_legacy ?? null;
   const onItemsChange = onBlobsChange ?? onPhotosChange;
@@ -425,7 +429,8 @@ export const Uploader = ({
                 id={blob.checksum ?? ''}
                 blob={blob}
                 filesMap={filesMap}
-                isImmediateSyncMode={isImmediateSyncMode}
+                instantUpload={shouldUploadInstantly}
+                instantAttach={shouldAttachInstantly}
                 attachableId={attachableId}
                 attachableType={attachableType}
                 mainBlobHash={mainBlobHash}
@@ -433,7 +438,6 @@ export const Uploader = ({
                 deleteFromFilesMap={deleteFromFilesMap}
                 removeBlobByHash={removeBlobByHash}
                 resetMainBlobHash={handleResetMainBlobHash}
-                syncBlobs={shouldSyncBlobs}
                 mutations={mutations}
                 stateSetters={stateSetters}
                 styling={styling}

@@ -43,22 +43,25 @@ export type LoadedPropsType = {
   
   // ===== SYNC CONTROL =====
   /**
-   * Controls attachment creation behavior:
-   * - true: Create attachments immediately after blob creation
-   * - false: Stop at BLOB_CREATED state (manual sync later)
-   * 
-   * Check sync completion: all blobs are either ATTACHED or (BLOB_CREATED && !syncBlobs)
+   * Controls whether to start upload immediately when file is selected
+   * - true: Start upload flow immediately (SELECTED_FOR_UPLOAD → UPLOADING_URL_GENERATING)
+   * - false: File stays at SELECTED_FOR_UPLOAD until triggered
+   * @default true
    */
+  instantUpload?: boolean;
+  /** @deprecated Use instantUpload instead */
   syncBlobs?: boolean;
-  /** @deprecated Use syncBlobs instead */
+  /** @deprecated Use instantUpload instead */
   syncPhotos?: boolean;
   
   /**
-   * Legacy mode flag (for backward compatibility)
-   * - true: Blobs sync immediately on upload
-   * - false: Blobs sync only when syncBlobs is true
+   * Controls whether to create attachments immediately after blob creation
+   * - true: Create attachments immediately (BLOB_CREATED → ATTACHING)
+   * - false: Stop at BLOB_CREATED state (attach later when offer is saved)
    * @default false
    */
+  instantAttach?: boolean;
+  /** @deprecated Use instantAttach instead */
   isImmediateSyncMode?: boolean;
   
   /**
