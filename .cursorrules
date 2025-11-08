@@ -6,6 +6,7 @@ Framework-agnostic React component library (Published to GitHub)
 ## Git Workflow
 - ❌ Do not run `git add`, `git commit`, `git push`, or other mutating git commands automatically.
 - ✅ Run git commands only when the user explicitly requests them.
+- 🔄 Keep this `.cursorrules` file (and documentation) updated whenever component APIs, library structure, or published features change.
 
 ## Key Principles
 - Framework-agnostic design (works with ANY state management)
