@@ -1,0 +1,25 @@
+# React Blob Uploader - Public Library Rules
+
+## Project Type
+Framework-agnostic React component library (Published to GitHub)
+
+## Git Workflow
+✅ AI CAN auto-commit and push changes to GitHub
+
+## Key Principles
+- Framework-agnostic design (works with ANY state management)
+- Flat result structures (no nested data)
+- 100% Tailwind CSS (no custom CSS variables)
+- TypeScript with full type safety
+- Comprehensive error handling with failed states
+
+## Development
+```bash
+npm run build   # Build library
+npm run dev     # Watch mode
+```
+
+## Publishing
+- Committed dist/ folder for GitHub installs
+- pnpm add github:abdulmughniHamzah/react-blob-uploader
+
