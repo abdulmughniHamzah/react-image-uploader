@@ -4555,6 +4555,7 @@ const Blob = ({ instantUpload, instantSyncAttach, attachableId, attachableType, 
                     break;
             }
         };
+        console.log('====>blob:', blob);
         handleStateTransition();
     }, [
         file,

@@ -229,7 +229,7 @@ const Blob: React.FC<BlobProps> = ({
           break;
       }
     };
-
+    console.log('====>blob:', blob);
     handleStateTransition();
   }, [
     file,

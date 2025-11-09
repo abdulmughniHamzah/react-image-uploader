@@ -17,7 +17,8 @@
     "test": "jest",
     "lint": "eslint src/**/*.{ts,tsx}",
     "type-check": "tsc --noEmit",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "publish": "npm run build && git add -A && git commit -m \"chore: publish\" && git push"
   },
   "keywords": [
     "react",
