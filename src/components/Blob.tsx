@@ -13,7 +13,8 @@ export interface BlobStateSetters {
   setBlobUploadUrl: (hash: string, uploadUrl: string) => void;
   setBlobKey: (hash: string, key: string) => void;
   setBlobId: (hash: string, blobId: number) => void;
-  setBlobPreviewUrl: (hash: string, previewUrl: string) => void;
+  setBlobPreviewUrl: (hash: string, previewUrl: string | null) => void;
+  setBlobUrl: (hash: string, url: string | null) => void;
   setBlobAttachmentId: (hash: string, attachmentId: number) => void;
   setBlobErrorMessage: (hash: string, errorMessage: string | null) => void;
 }
@@ -118,10 +119,22 @@ const Blob: React.FC<BlobProps> = ({
             });
             
             if (result.success) {
-              stateSetters.setBlobUploadUrl(hash, result.uploadUrl);
-              stateSetters.setBlobKey(hash, result.key);
-              stateSetters.setBlobErrorMessage(hash, null);
-              stateSetters.setBlobState(hash, 'UPLOADING_URL_GENERATED');
+              if(result.uploadUrl){
+                stateSetters.setBlobUploadUrl(hash, result.uploadUrl);
+                stateSetters.setBlobKey(hash, result.key);
+                stateSetters.setBlobErrorMessage(hash, null);
+                stateSetters.setBlobState(hash, 'UPLOADING_URL_GENERATED');
+              } else if(result.blobId && result.key){
+                stateSetters.setBlobId(hash, result.blobId);
+                stateSetters.setBlobKey(hash, result.key);
+                stateSetters.setBlobPreviewUrl(hash, result.previewUrl);
+                stateSetters.setBlobUrl(hash, result.url);
+                stateSetters.setBlobErrorMessage(hash, null);
+                stateSetters.setBlobState(hash, 'BLOB_CREATED');
+              } else {
+                stateSetters.setBlobErrorMessage(hash, null);
+                stateSetters.setBlobState(hash, 'UPLOADED');
+              }
             } else {
               stateSetters.setBlobErrorMessage(hash, result.error);
               stateSetters.setBlobState(hash, 'UPLOADING_URL_GENERATION_FAILED');
@@ -146,9 +159,6 @@ const Blob: React.FC<BlobProps> = ({
               stateSetters.setBlobErrorMessage(hash, result.error);
               stateSetters.setBlobState(hash, 'UPLOAD_FAILED');
             }
-          }else{
-            stateSetters.setBlobErrorMessage(hash, null);
-            stateSetters.setBlobState(hash, 'UPLOADED');
           }
           break;
 
@@ -167,7 +177,8 @@ const Blob: React.FC<BlobProps> = ({
             if (result.success) {
               stateSetters.setBlobId(hash, result.id);
               stateSetters.setBlobKey(hash, result.key);
-              stateSetters.setBlobPreviewUrl(hash, result.url);
+              stateSetters.setBlobPreviewUrl(hash, result.previewUrl);
+              stateSetters.setBlobUrl(hash, result.url);
               stateSetters.setBlobErrorMessage(hash, null);
               stateSetters.setBlobState(hash, 'BLOB_CREATED');
             } else {

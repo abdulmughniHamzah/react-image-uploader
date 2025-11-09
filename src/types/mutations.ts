@@ -14,7 +14,7 @@
  */
 
 export type GetUploadUrlResult =
-  | { success: true; hash: string; uploadUrl: string; key: string }
+  | { success: true; hash: string; uploadUrl: string | null; key: string, blobId: number | null,  previewUrl: string | null, url: string | null}
   | { success: false; hash: string; error: string };
 
 export type DirectUploadResult =
@@ -22,7 +22,7 @@ export type DirectUploadResult =
   | { success: false; hash: string; error: string };
 
 export type CreateBlobResult =
-  | { success: true; hash: string; id: number; key: string; url: string }
+  | { success: true; hash: string; id: number; key: string; url: string, previewUrl: string | null }
   | { success: false; hash: string; error: string };
 
 export type CreateAttachmentResult =

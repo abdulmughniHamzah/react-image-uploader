@@ -4454,10 +4454,24 @@ const Blob = ({ instantUpload, instantSyncAttach, attachableId, attachableType, 
                             size: blob.size,
                         });
                         if (result.success) {
-                            stateSetters.setBlobUploadUrl(hash, result.uploadUrl);
-                            stateSetters.setBlobKey(hash, result.key);
-                            stateSetters.setBlobErrorMessage(hash, null);
-                            stateSetters.setBlobState(hash, 'UPLOADING_URL_GENERATED');
+                            if (result.uploadUrl) {
+                                stateSetters.setBlobUploadUrl(hash, result.uploadUrl);
+                                stateSetters.setBlobKey(hash, result.key);
+                                stateSetters.setBlobErrorMessage(hash, null);
+                                stateSetters.setBlobState(hash, 'UPLOADING_URL_GENERATED');
+                            }
+                            else if (result.blobId && result.key) {
+                                stateSetters.setBlobId(hash, result.blobId);
+                                stateSetters.setBlobKey(hash, result.key);
+                                stateSetters.setBlobPreviewUrl(hash, result.previewUrl);
+                                stateSetters.setBlobUrl(hash, result.url);
+                                stateSetters.setBlobErrorMessage(hash, null);
+                                stateSetters.setBlobState(hash, 'BLOB_CREATED');
+                            }
+                            else {
+                                stateSetters.setBlobErrorMessage(hash, null);
+                                stateSetters.setBlobState(hash, 'UPLOADED');
+                            }
                         }
                         else {
                             stateSetters.setBlobErrorMessage(hash, result.error);
@@ -4482,10 +4496,6 @@ const Blob = ({ instantUpload, instantSyncAttach, attachableId, attachableType, 
                             stateSetters.setBlobState(hash, 'UPLOAD_FAILED');
                         }
                     }
-                    else {
-                        stateSetters.setBlobErrorMessage(hash, null);
-                        stateSetters.setBlobState(hash, 'UPLOADED');
-                    }
                     break;
                 case 'UPLOADED':
                     if (blob.key && blob.name && blob.mimeType && blob.size) {
@@ -4500,7 +4510,8 @@ const Blob = ({ instantUpload, instantSyncAttach, attachableId, attachableType, 
                         if (result.success) {
                             stateSetters.setBlobId(hash, result.id);
                             stateSetters.setBlobKey(hash, result.key);
-                            stateSetters.setBlobPreviewUrl(hash, result.url);
+                            stateSetters.setBlobPreviewUrl(hash, result.previewUrl);
+                            stateSetters.setBlobUrl(hash, result.url);
                             stateSetters.setBlobErrorMessage(hash, null);
                             stateSetters.setBlobState(hash, 'BLOB_CREATED');
                         }
@@ -4791,6 +4802,7 @@ const Uploader = ({ instantUpload, instantSyncAttach = false, maxBlobs, maxPhoto
                 checksum: checksum,
                 state: 'SELECTED_FOR_UPLOAD',
                 errorMessage: null,
+                url: null,
             };
             addBlob(newBlob);
         }
@@ -4980,6 +4992,9 @@ const Uploader = ({ instantUpload, instantSyncAttach = false, maxBlobs, maxPhoto
         },
         setBlobPreviewUrl: (hash, previewUrl) => {
             updateBlobState(hash, { previewUrl });
+        },
+        setBlobUrl: (hash, url) => {
+            updateBlobState(hash, { url });
         },
         setBlobAttachmentId: (hash, attachmentId) => {
             updateBlobState(hash, { attachmentId });

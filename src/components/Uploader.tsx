@@ -150,6 +150,7 @@ export const Uploader = ({
         checksum: checksum,
         state: 'SELECTED_FOR_UPLOAD',
         errorMessage: null,
+        url: null,
       };
       addBlob(newBlob);
     }
@@ -345,8 +346,11 @@ export const Uploader = ({
     setBlobId: (hash: string, blobId: number) => {
       updateBlobState(hash, { blobId });
     },
-    setBlobPreviewUrl: (hash: string, previewUrl: string) => {
+    setBlobPreviewUrl: (hash: string, previewUrl: string | null) => {
       updateBlobState(hash, { previewUrl });
+    },
+    setBlobUrl: (hash: string, url: string | null) => {
+      updateBlobState(hash, { url });
     },
     setBlobAttachmentId: (hash: string, attachmentId: number) => {
       updateBlobState(hash, { attachmentId });

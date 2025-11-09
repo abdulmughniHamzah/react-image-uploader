@@ -6,6 +6,7 @@ export interface BlobType {
     previewUrl: string | null;
     mimeType: string | null;
     size: number | null;
+    url: string | null;
     checksum: string | null;
     attachmentId: number | null;
     blobId: number | null;

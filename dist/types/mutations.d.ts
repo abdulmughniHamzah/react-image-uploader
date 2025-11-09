@@ -1,8 +1,11 @@
 export type GetUploadUrlResult = {
     success: true;
     hash: string;
-    uploadUrl: string;
+    uploadUrl: string | null;
     key: string;
+    blobId: number | null;
+    previewUrl: string | null;
+    url: string | null;
 } | {
     success: false;
     hash: string;
@@ -22,6 +25,7 @@ export type CreateBlobResult = {
     id: number;
     key: string;
     url: string;
+    previewUrl: string | null;
 } | {
     success: false;
     hash: string;
