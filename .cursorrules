@@ -11,4 +11,4 @@
 
 ## 📚 Full Library Reference
 - Detailed guidance is auto-included from:
-  - @include .cursor/rules/00-overview.md
+  - @include README.md
