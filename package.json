@@ -18,7 +18,7 @@
     "lint": "eslint src/**/*.{ts,tsx}",
     "type-check": "tsc --noEmit",
     "prepublishOnly": "npm run build",
-    "publish": "npm run build && git add -A && git commit -m \"chore: publish\" && git push"
+    "publish": "bash -c 'npm run build && git add -A && read -p \"Commit message: \" msg && git commit -m \"$msg\" && git push'"
   },
   "keywords": [
     "react",
