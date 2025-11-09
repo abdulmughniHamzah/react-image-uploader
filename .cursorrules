@@ -4,6 +4,7 @@
 - ❌ Never run `git add`, `git commit`, or `git push` automatically
 - ✅ Execute git commands only when the user explicitly requests them
 - 🔄 Update this file and supporting docs whenever component APIs or structure change
+- 📝 Sync any library modifications with the published `README.md` documentation immediately.
 
 ## 🧭 Working Expectations
 - Maintain framework-agnostic patterns and flat mutation results
