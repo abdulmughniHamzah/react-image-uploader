@@ -4740,14 +4740,14 @@ function mergeStyling(custom) {
     };
 }
 
-const Uploader = ({ instantUpload, instantSyncAttach = false, maxBlobs, maxPhotos, syncBlobs, syncPhotos, isImmediateSyncMode, initialBlobs, initialPhotos, onBlobsChange, onPhotosChange, attachableId, attachableType = 'Offer', processRunning = false, mainBlobHash: externalMainBlobHash, mainPhotoHash: externalMainPhotoHash_legacy, onMainBlobChange, onMainPhotoChange, mutations, styling: customStyling, photos: legacyPhotos, addPhoto: legacyAddPhoto, removePhotoByHash: legacyRemovePhotoByHash, setMainPhotoHash: legacySetMainPhotoHash, getUploadUrl: legacyGetUploadUrl, getPreviewUrl: legacyGetPreviewUrl, directUpload: legacyDirectUpload, createBlob: legacyCreateBlob, createAttachment: legacyCreateAttachment, deleteAttachment: legacyDeleteAttachment, resetMainPhotoHash: legacyResetMainPhotoHash, setPhotoState: legacySetPhotoState, setPhotos: legacySetPhotos, }) => {
-    const maxItems = maxBlobs ?? maxPhotos ?? 10;
-    const shouldUploadInstantly = instantUpload ?? syncBlobs ?? syncPhotos ?? true;
-    const shouldAttachInstantly = instantSyncAttach ?? isImmediateSyncMode ?? false;
-    const initialItems = initialBlobs ?? initialPhotos ?? legacyPhotos ?? [];
-    const externalMain = externalMainBlobHash ?? externalMainPhotoHash_legacy ?? null;
-    const onItemsChange = onBlobsChange ?? onPhotosChange;
-    const onMainChange = onMainBlobChange ?? onMainPhotoChange;
+const Uploader = ({ instantUpload, instantSyncAttach = false, maxBlobs, initialBlobs, onBlobsChange, attachableId, attachableType = 'Offer', processRunning = false, mainBlobHash: externalMainBlobHash, onMainBlobChange, mutations, styling: customStyling, }) => {
+    const maxItems = maxBlobs ?? 10;
+    const shouldUploadInstantly = instantUpload ?? true;
+    const shouldAttachInstantly = instantSyncAttach ?? false;
+    const initialItems = initialBlobs ?? [];
+    const externalMain = externalMainBlobHash ?? null;
+    const onItemsChange = onBlobsChange;
+    const onMainChange = onMainBlobChange;
     const [blobs, setBlobs] = React.useState(initialItems);
     const [filesMap, setFilesMap] = React.useState(new Map());
     const [mainBlobHash, setMainBlobHash] = React.useState(externalMain);
@@ -4763,15 +4763,13 @@ const Uploader = ({ instantUpload, instantSyncAttach = false, maxBlobs, maxPhoto
     }, []);
     const addBlob = React.useCallback((blob) => {
         setBlobs(prev => [...prev, blob]);
-        legacyAddPhoto?.(blob);
-    }, [legacyAddPhoto]);
+    }, []);
     const removeBlobByHash = React.useCallback((checksum) => {
         setBlobs(prev => prev.filter(p => p.checksum !== checksum));
         if (mainBlobHash === checksum) {
             setMainBlobHash(null);
         }
-        legacyRemovePhotoByHash?.(checksum);
-    }, [mainBlobHash, legacyRemovePhotoByHash]);
+    }, [mainBlobHash]);
     const deleteFromFilesMap = React.useCallback((checksum) => {
         setFilesMap(prev => {
             const newMap = new Map(prev);
@@ -5024,12 +5022,10 @@ const Uploader = ({ instantUpload, instantSyncAttach = false, maxBlobs, maxPhoto
     }, []);
     const handleSetMainBlobHash = React.useCallback((checksum) => {
         setMainBlobHash(checksum);
-        legacySetMainPhotoHash?.(checksum);
-    }, [legacySetMainPhotoHash]);
+    }, []);
     const handleResetMainBlobHash = React.useCallback(() => {
         setMainBlobHash(null);
-        legacyResetMainPhotoHash?.();
-    }, [legacyResetMainPhotoHash]);
+    }, []);
     return (jsxRuntime.jsx(DndContext, { sensors: sensors, collisionDetection: closestCenter, onDragEnd: handleDragEnd, children: jsxRuntime.jsx(SortableContext, { items: blobs.map((blob) => blob.checksum ?? ''), strategy: rectSortingStrategy, children: jsxRuntime.jsxs("div", { className: styling.containerClassName, children: [blobs.length < maxItems && !processRunning && (jsxRuntime.jsxs("label", { title: 'Upload File', className: styling.uploadButtonClassName, children: [jsxRuntime.jsx("span", { className: 'text-center', children: "Upload" }), jsxRuntime.jsx("input", { type: 'file', accept: 'image/*', multiple: true, onChange: (e) => {
                                     if (e.target.files && e.target.files.length > 0) {
                                         handleFiles(e.target.files);

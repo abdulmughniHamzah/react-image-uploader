@@ -11,7 +11,7 @@ import {
   SortableContext,
   rectSortingStrategy,
 } from '@dnd-kit/sortable';
-import { BlobType, PhotoType } from '../types/blob'; // PhotoType is alias for backward compatibility
+import { BlobType } from '../types/blob';
 import { calculateChecksum } from '../utils/checksum';
 import SortableBlob from './SortableBlob';
 import { LoadedPropsType } from './propsType';
@@ -32,47 +32,27 @@ export const Uploader = ({
   instantSyncAttach = false,
   // Support both new and old prop names for backward compatibility
   maxBlobs,
-  maxPhotos,
-  syncBlobs,
-  syncPhotos,
-  isImmediateSyncMode,
   initialBlobs,
-  initialPhotos,
   onBlobsChange,
-  onPhotosChange,
   attachableId,
   attachableType = 'Offer',
   processRunning = false,
   mainBlobHash: externalMainBlobHash,
-  mainPhotoHash: externalMainPhotoHash_legacy,
   onMainBlobChange,
-  onMainPhotoChange,
   mutations,
   styling: customStyling,
   
   // Legacy props (for backward compatibility)
-  photos: legacyPhotos,
-  addPhoto: legacyAddPhoto,
-  removePhotoByHash: legacyRemovePhotoByHash,
-  setMainPhotoHash: legacySetMainPhotoHash,
-  getUploadUrl: legacyGetUploadUrl,
-  getPreviewUrl: legacyGetPreviewUrl,
-  directUpload: legacyDirectUpload,
-  createBlob: legacyCreateBlob,
-  createAttachment: legacyCreateAttachment,
-  deleteAttachment: legacyDeleteAttachment,
-  resetMainPhotoHash: legacyResetMainPhotoHash,
-  setPhotoState: legacySetPhotoState,
-  setPhotos: legacySetPhotos,
+
 }: LoadedPropsType) => {
   // Normalize props (new names take precedence, fall back to old names)
-  const maxItems = maxBlobs ?? maxPhotos ?? 10;
-  const shouldUploadInstantly = instantUpload ?? syncBlobs ?? syncPhotos ?? true;
-  const shouldAttachInstantly = instantSyncAttach ?? isImmediateSyncMode ?? false;
-  const initialItems = initialBlobs ?? initialPhotos ?? legacyPhotos ?? [];
-  const externalMain = externalMainBlobHash ?? externalMainPhotoHash_legacy ?? null;
-  const onItemsChange = onBlobsChange ?? onPhotosChange;
-  const onMainChange = onMainBlobChange ?? onMainPhotoChange;
+  const maxItems = maxBlobs ?? 10;
+  const shouldUploadInstantly = instantUpload ?? true;
+  const shouldAttachInstantly = instantSyncAttach ?? false;
+  const initialItems = initialBlobs ?? [];
+  const externalMain = externalMainBlobHash ?? null;
+  const onItemsChange = onBlobsChange;
+  const onMainChange = onMainBlobChange;
   
   // ===== INTERNAL STATE MANAGEMENT =====
   const [blobs, setBlobs] = useState<BlobType[]>(initialItems);
@@ -100,16 +80,14 @@ export const Uploader = ({
 
   const addBlob = useCallback((blob: BlobType) => {
     setBlobs(prev => [...prev, blob]);
-    legacyAddPhoto?.(blob); // Backward compatibility
-  }, [legacyAddPhoto]);
+  }, []);
 
   const removeBlobByHash = useCallback((checksum: string) => {
     setBlobs(prev => prev.filter(p => p.checksum !== checksum));
     if (mainBlobHash === checksum) {
       setMainBlobHash(null);
     }
-    legacyRemovePhotoByHash?.(checksum); // Backward compatibility
-  }, [mainBlobHash, legacyRemovePhotoByHash]);
+  }, [mainBlobHash]);
 
   // ===== FILE HANDLING =====
   const deleteFromFilesMap = useCallback((checksum: string) => {
@@ -382,13 +360,11 @@ export const Uploader = ({
 
   const handleSetMainBlobHash = useCallback((checksum: string) => {
     setMainBlobHash(checksum);
-    legacySetMainPhotoHash?.(checksum); // Backward compatibility
-  }, [legacySetMainPhotoHash]);
+  }, []);
 
   const handleResetMainBlobHash = useCallback(() => {
     setMainBlobHash(null);
-    legacyResetMainPhotoHash?.(); // Backward compatibility
-  }, [legacyResetMainPhotoHash]);
+  }, []);
 
   // ===== RENDER =====
   return (
