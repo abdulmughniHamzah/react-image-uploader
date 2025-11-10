@@ -1,6 +1,6 @@
 {
   "name": "react-blob-uploader",
-  "version": "2.0.17",
+  "version": "2.1.0",
   "description": "A self-contained, production-ready React component for file uploads (images, documents, videos, etc.) with drag & drop, reordering, and cloud direct upload support. Features framework-agnostic state management, Result-based mutation callbacks, and customizable styling.",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
