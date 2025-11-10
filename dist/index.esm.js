@@ -4719,13 +4719,6 @@ const baseDefaultStyling = {
 };
 const defaultStyling = {
     ...baseDefaultStyling,
-    photoContainerClassName: baseDefaultStyling.blobContainerClassName,
-    photoImageClassName: baseDefaultStyling.blobImageClassName,
-    photoContainerFailedClassName: baseDefaultStyling.blobContainerFailedClassName,
-    photoImageFailedClassName: baseDefaultStyling.blobImageFailedClassName,
-    mainPhotoBadgeClassName: baseDefaultStyling.mainBlobBadgeClassName,
-    loadingClassName: baseDefaultStyling.loadingContainerClassName,
-    errorClassName: baseDefaultStyling.errorContainerClassName,
 };
 function mergeStyling(custom) {
     if (!custom)
@@ -4733,13 +4726,6 @@ function mergeStyling(custom) {
     return {
         ...defaultStyling,
         ...custom,
-        blobContainerClassName: custom.blobContainerClassName || custom.photoContainerClassName || defaultStyling.blobContainerClassName,
-        blobImageClassName: custom.blobImageClassName || custom.photoImageClassName || defaultStyling.blobImageClassName,
-        blobContainerFailedClassName: custom.blobContainerFailedClassName || custom.photoContainerFailedClassName || defaultStyling.blobContainerFailedClassName,
-        blobImageFailedClassName: custom.blobImageFailedClassName || custom.photoImageFailedClassName || defaultStyling.blobImageFailedClassName,
-        mainBlobBadgeClassName: custom.mainBlobBadgeClassName || custom.mainPhotoBadgeClassName || defaultStyling.mainBlobBadgeClassName,
-        loadingContainerClassName: custom.loadingContainerClassName || custom.loadingClassName || defaultStyling.loadingContainerClassName,
-        errorContainerClassName: custom.errorContainerClassName || custom.errorClassName || defaultStyling.errorContainerClassName,
     };
 }
 
