@@ -194,7 +194,7 @@ const Blob: React.FC<BlobProps> = ({
           break;
 
         case 'BLOB_CREATED':
-          // Only create attachment when instantSyncAttach is true and we have required data
+          // Only create attachment when instantSyncAttach is true and we have required data.
           if (instantSyncAttach && attachableId && blob.blobId && !blob.errorMessage) {
             stateSetters.setBlobState(hash, 'ATTACHING');
             
