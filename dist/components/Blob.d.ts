@@ -2,14 +2,7 @@ import { BlobType } from '../types/blob';
 import { StylingProps } from '../types/styling';
 import { MutationCallbacks } from '../types/mutations';
 export interface BlobStateSetters {
-    setBlobState: (hash: string, state: BlobType['state']) => void;
-    setBlobUploadUrl: (hash: string, uploadUrl: string) => void;
-    setBlobKey: (hash: string, key: string) => void;
-    setBlobId: (hash: string, blobId: number) => void;
-    setBlobPreviewUrl: (hash: string, previewUrl: string | null) => void;
-    setBlobUrl: (hash: string, url: string | null) => void;
-    setBlobAttachmentId: (hash: string, attachmentId: number) => void;
-    setBlobErrorMessage: (hash: string, errorMessage: string | null) => void;
+    setBlob: (hash: string, updates: Partial<BlobType>) => void;
 }
 interface BlobProps {
     instantUpload: boolean;

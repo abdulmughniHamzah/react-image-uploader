@@ -311,32 +311,14 @@ const BlobUploader = ({
   }, [blobs, mutations, updateBlobState]);
 
   // ===== STATE SETTERS (Framework-agnostic) =====
-  const stateSetters = useMemo(() => ({
-    setBlobState: (hash: string, state: BlobType['state']) => {
-      updateBlobState(hash, { state });
-    },
-    setBlobUploadUrl: (hash: string, uploadUrl: string) => {
-      updateBlobState(hash, { uploadUrl });
-    },
-    setBlobKey: (hash: string, key: string) => {
-      updateBlobState(hash, { key });
-    },
-    setBlobId: (hash: string, blobId: number) => {
-      updateBlobState(hash, { blobId });
-    },
-    setBlobPreviewUrl: (hash: string, previewUrl: string | null) => {
-      updateBlobState(hash, { previewUrl });
-    },
-    setBlobUrl: (hash: string, url: string | null) => {
-      updateBlobState(hash, { url });
-    },
-    setBlobAttachmentId: (hash: string, attachmentId: number) => {
-      updateBlobState(hash, { attachmentId });
-    },
-    setBlobErrorMessage: (hash: string, errorMessage: string | null) => {
-      updateBlobState(hash, { errorMessage });
-    },
-  }), [updateBlobState]);
+  const stateSetters = useMemo(
+    () => ({
+      setBlob: (hash: string, updates: Partial<BlobType>) => {
+        updateBlobState(hash, updates);
+      },
+    }),
+    [updateBlobState]
+  );
 
   // ===== DRAG AND DROP =====
   const sensors = useSensors(

@@ -12,8 +12,8 @@
     "BLOB_REFACTORING_SUMMARY.md"
   ],
   "scripts": {
-    "build": "rollup -c",
-    "dev": "rollup -c -w",
+    "build": "npx rollup -c",
+    "dev": "npx rollup -c -w",
     "test": "jest",
     "lint": "eslint src/**/*.{ts,tsx}",
     "type-check": "tsc --noEmit",
