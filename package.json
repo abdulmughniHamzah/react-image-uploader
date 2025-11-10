@@ -18,10 +18,10 @@
     "lint": "eslint src/**/*.{ts,tsx}",
     "type-check": "tsc --noEmit",
     "prepublishOnly": "npm run build",
-    "release:beta": "npm run build && npm version prerelease --preid=beta --force && git push && git push --tags && npm publish --tag beta --access public",
-    "release:patch": "npm run build && npm version patch --force && git push && git push --tags && npm publish --access public",
-    "release:minor": "npm run build && npm version minor --force && git push && git push --tags && npm publish --access public",
-    "release:major": "npm run build && npm version major --force && git push && git push --tags && npm publish --access public"
+    "release:beta": "git add -A && npm run build && git add -A && (git diff-index --quiet HEAD || git commit -m 'chore: build output before release') && npm version prerelease --preid=beta --force && git push && git push --tags && npm publish --tag beta --access public",
+    "release:patch": "git add -A && npm run build && git add -A && (git diff-index --quiet HEAD || git commit -m 'chore: build output before release') && npm version patch --force && git push && git push --tags && npm publish --access public",
+    "release:minor": "git add -A && npm run build && git add -A && (git diff-index --quiet HEAD || git commit -m 'chore: build output before release') && npm version minor --force && git push && git push --tags && npm publish --access public",
+    "release:major": "git add -A && npm run build && git add -A && (git diff-index --quiet HEAD || git commit -m 'chore: build output before release') && npm version major --force && git push && git push --tags && npm publish --access public"
   },
   "keywords": [
     "react",
