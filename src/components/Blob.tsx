@@ -98,7 +98,6 @@ const Blob: React.FC<BlobProps> = ({
   };
 
   // Blob lifecycle state machine with local state control
-  // Component is now completely agnostic - it just orchestrates and calls individual setters
   useEffect(() => {
     const handleStateTransition = async () => {
       if (!blob.checksum) return;
