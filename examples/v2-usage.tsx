@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import ImageUploader, {
+import BlobUploader, {
   type BlobType,
   type MutationCallbacks,
   type StylingProps,
@@ -62,7 +62,7 @@ export const BasicUsage = () => {
 
   return (
     <div>
-      <ImageUploader
+      <BlobUploader
         initialBlobs={blobs}
         onBlobsChange={setBlobs}
         mainBlobHash={mainBlobHash}
@@ -93,7 +93,7 @@ export const CustomStyling = () => {
   };
 
   return (
-    <ImageUploader
+    <BlobUploader
       initialBlobs={blobs}
       onBlobsChange={setBlobs}
       mainBlobHash={mainBlobHash}
@@ -128,7 +128,7 @@ export const EditMode = () => {
   const mutations = createMockMutations();
 
   return (
-    <ImageUploader
+    <BlobUploader
       initialBlobs={blobs}
       onBlobsChange={setBlobs}
       mainBlobHash={mainBlobHash}

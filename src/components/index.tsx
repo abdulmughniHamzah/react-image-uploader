@@ -6,7 +6,7 @@ import Uploader from './Uploader';
 import Skeleton from './Skeleton';
 import PropsType from './propsType';
 
-const ImageUploader: React.FC<PropsType> = (props) => {
+const BlobUploader: React.FC<PropsType> = (props) => {
   if (props.skeleton) {
     return <Skeleton />;
   }
@@ -14,4 +14,4 @@ const ImageUploader: React.FC<PropsType> = (props) => {
   return <Uploader {...props} />;
 };
 
-export default ImageUploader;
+export default BlobUploader;

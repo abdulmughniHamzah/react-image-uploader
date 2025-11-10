@@ -1,6 +1,4 @@
 // Main component - self-contained with internal state management
-export { default as ImageUploader } from './components/Uploader';
-export { default as BlobUploader } from './components/Uploader';
 export { default } from './components/Uploader';
 
 // Core types
@@ -24,9 +22,3 @@ export type { StylingProps } from './types/styling';
 
 // Utils
 export { calculateChecksum } from './utils/checksum';
-
-// Deprecated exports for backward compatibility
-/**
- * @deprecated Use BlobStateSetters instead
- */
-export type { BlobStateSetters as BlobStateSettersType } from './components/Blob';

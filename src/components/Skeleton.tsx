@@ -1,7 +1,7 @@
 import React from 'react';
 
 /**
- * Skeleton loading state for ImageUploader
+ * Skeleton loading state for BlobUploader
  */
 const Skeleton: React.FC = () => {
   return (

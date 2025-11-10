@@ -18,7 +18,7 @@ import { LoadedPropsType } from './propsType';
 import { mergeStyling } from '../types/styling';
 
 /**
- * Self-contained ImageUploader component with internal state management
+ * Self-contained BlobUploader component with internal state management
  * 
  * ARCHITECTURE:
  * - Manages photo states internally
@@ -26,7 +26,7 @@ import { mergeStyling } from '../types/styling';
  * - Parent reads final state via onPhotosChange callback
  * - syncPhotos controls whether to create attachments after blob creation
  */
-export const Uploader = ({
+const BlobUploader = ({
   // New prop names (clear and explicit)
   instantUpload,
   instantSyncAttach = false,
@@ -429,5 +429,5 @@ export const Uploader = ({
   );
 };
 
-export default Uploader;
+export default BlobUploader;
 
