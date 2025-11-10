@@ -1,6 +1,6 @@
 {
   "name": "react-blob-uploader",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "A self-contained, production-ready React component for file uploads (images, documents, videos, etc.) with drag & drop, reordering, and cloud direct upload support. Features framework-agnostic state management, Result-based mutation callbacks, and customizable styling.",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
@@ -41,7 +41,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/abdulmughniHamzah/react-blob-uploader.git"
+    "url": "git+https://github.com/abdulmughniHamzah/react-blob-uploader.git"
   },
   "bugs": {
     "url": "https://github.com/abdulmughniHamzah/react-blob-uploader/issues"
