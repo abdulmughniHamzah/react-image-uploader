@@ -22,6 +22,7 @@ interface SortableBlobProps {
   mutations: MutationCallbacks;
   stateSetters: BlobStateSetters;
   styling: Required<StylingProps>;
+  processRunning: boolean;
 }
 
 function SortableBlob({
@@ -40,6 +41,7 @@ function SortableBlob({
   mutations,
   stateSetters,
   styling,
+  processRunning,
 }: SortableBlobProps) {
   const {
     attributes,
@@ -79,6 +81,7 @@ function SortableBlob({
         mutations={mutations}
         stateSetters={stateSetters}
         styling={styling}
+        processRunning={processRunning}
       />
     </div>
   );

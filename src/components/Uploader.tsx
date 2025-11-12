@@ -211,6 +211,7 @@ const BlobUploader = ({
                 mutations={mutations}
                 stateSetters={stateSetters}
                 styling={styling}
+                processRunning={processRunning}
                 filesMap={filesMapRef.current} />
             ))}
           </div>

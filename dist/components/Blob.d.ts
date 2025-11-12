@@ -19,6 +19,7 @@ interface BlobProps {
     mutations: MutationCallbacks;
     stateSetters: BlobStateSetters;
     styling: Required<StylingProps>;
+    processRunning: boolean;
 }
 declare const Blob: React.FC<BlobProps>;
 export default Blob;

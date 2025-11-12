@@ -27,6 +27,7 @@ interface BlobProps {
   mutations: MutationCallbacks;
   stateSetters: BlobStateSetters;
   styling: Required<StylingProps>;
+  processRunning: boolean;
 }
 
 const Blob: React.FC<BlobProps> = ({
@@ -44,6 +45,7 @@ const Blob: React.FC<BlobProps> = ({
   mutations,
   stateSetters,
   styling,
+  processRunning,
 }) => {
   const setBlob = stateSetters.setBlob;
 
@@ -324,8 +326,9 @@ const Blob: React.FC<BlobProps> = ({
             <button
               type='button'
               onClick={handleRetry}
-              className={styling.retryButtonClassName}
-              title="Retry upload"
+              disabled={processRunning}
+              className={`${styling.retryButtonClassName} ${processRunning ? 'opacity-50 cursor-not-allowed' : ''}`}
+              title={processRunning ? 'Form is processing' : 'Retry upload'}
             >
               Retry
             </button>
@@ -337,8 +340,9 @@ const Blob: React.FC<BlobProps> = ({
       <button
         type='button'
         onClick={handleRemoveBlob}
-        className={styling.removeButtonClassName}
-        title='Remove blob'
+        disabled={processRunning}
+        className={`${styling.removeButtonClassName} ${processRunning ? 'opacity-50 cursor-not-allowed' : ''}`}
+        title={processRunning ? 'Form is processing' : 'Remove blob'}
       >
         <X className={styling.removeButtonIconClassName} />
       </button>
@@ -356,8 +360,9 @@ const Blob: React.FC<BlobProps> = ({
         <button
           type='button'
           onClick={() => setMainBlobHash(blob.checksum!)}
-          className={styling.setMainButtonClassName}
-          title='Set as main blob'
+          disabled={processRunning}
+          className={`${styling.setMainButtonClassName} ${processRunning ? 'opacity-50 cursor-not-allowed' : ''}`}
+          title={processRunning ? 'Form is processing' : 'Set as main blob'}
         >
           Set Main
         </button>
