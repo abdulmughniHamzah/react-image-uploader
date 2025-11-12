@@ -4475,8 +4475,9 @@ const Blob = ({ instantUpload, instantSyncAttach, attachableId, attachableType, 
                         else {
                             const newRetryCount = blob.retryCount - 1;
                             setBlob(hash, {
+                                state: 'SELECTED_FOR_UPLOAD',
                                 errorMessage: result.error,
-                                retryCount: newRetryCount,
+                                retryCount: Math.max(newRetryCount, 0),
                             });
                         }
                     }
@@ -4498,9 +4499,9 @@ const Blob = ({ instantUpload, instantSyncAttach, attachableId, attachableType, 
                         else {
                             const newRetryCount = blob.retryCount - 1;
                             setBlob(hash, {
-                                errorMessage: result.error,
-                                retryCount: newRetryCount,
                                 state: 'UPLOADING_URL_GENERATED',
+                                errorMessage: result.error,
+                                retryCount: Math.max(newRetryCount, 0),
                             });
                         }
                     }
@@ -4528,9 +4529,9 @@ const Blob = ({ instantUpload, instantSyncAttach, attachableId, attachableType, 
                         else {
                             const newRetryCount = blob.retryCount - 1;
                             setBlob(hash, {
-                                errorMessage: result.error,
-                                retryCount: newRetryCount,
                                 state: 'UPLOADED',
+                                errorMessage: result.error,
+                                retryCount: Math.max(newRetryCount, 0),
                             });
                         }
                     }
@@ -4554,9 +4555,9 @@ const Blob = ({ instantUpload, instantSyncAttach, attachableId, attachableType, 
                         else {
                             const newRetryCount = blob.retryCount - 1;
                             setBlob(hash, {
-                                errorMessage: result.error,
-                                retryCount: newRetryCount,
                                 state: 'BLOB_CREATED',
+                                errorMessage: result.error,
+                                retryCount: Math.max(newRetryCount, 0),
                             });
                         }
                     }
@@ -4585,7 +4586,7 @@ const Blob = ({ instantUpload, instantSyncAttach, attachableId, attachableType, 
                             const newRetryCount = blob.retryCount - 1;
                             setBlob(hash, {
                                 errorMessage: message,
-                                retryCount: newRetryCount,
+                                retryCount: Math.max(newRetryCount, 0),
                                 state: 'MARKED_FOR_DETACH',
                             });
                         }

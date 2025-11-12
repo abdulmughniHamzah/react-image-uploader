@@ -128,11 +128,12 @@ const Blob: React.FC<BlobProps> = ({
                 });
               }
             } else {
-              // Stay at SELECTED_FOR_UPLOAD, set error and decrement retry count
+              // Step back to SELECTED_FOR_UPLOAD, set error and decrement retry count
               const newRetryCount = blob.retryCount - 1;
               setBlob(hash, {
+                state: 'SELECTED_FOR_UPLOAD',
                 errorMessage: result.error,
-                retryCount: newRetryCount,
+                retryCount: Math.max(newRetryCount, 0),
               });
             }
           }
@@ -155,12 +156,12 @@ const Blob: React.FC<BlobProps> = ({
                 state: 'UPLOADED',
               });
             } else {
-              // Stay at UPLOADING_URL_GENERATED, set error and decrement retry count
+              // Step back to UPLOADING_URL_GENERATED, set error and decrement retry count
               const newRetryCount = blob.retryCount - 1;
               setBlob(hash, {
-                errorMessage: result.error,
-                retryCount: newRetryCount,
                 state: 'UPLOADING_URL_GENERATED',
+                errorMessage: result.error,
+                retryCount: Math.max(newRetryCount, 0),
               });
             }
           }
@@ -189,12 +190,12 @@ const Blob: React.FC<BlobProps> = ({
                 state: 'BLOB_CREATED',
               });
             } else {
-              // Stay at UPLOADED, set error and decrement retry count
+              // Step back to UPLOADED, set error and decrement retry count
               const newRetryCount = blob.retryCount - 1;
               setBlob(hash, {
-                errorMessage: result.error,
-                retryCount: newRetryCount,
                 state: 'UPLOADED',
+                errorMessage: result.error,
+                retryCount: Math.max(newRetryCount, 0),
               });
             }
           }
@@ -219,12 +220,12 @@ const Blob: React.FC<BlobProps> = ({
                 state: 'ATTACHED',
               });
             } else {
-              // Stay at BLOB_CREATED, set error and decrement retry count
+              // Step back to BLOB_CREATED, set error and decrement retry count
               const newRetryCount = blob.retryCount - 1;
               setBlob(hash, {
-                errorMessage: result.error,
-                retryCount: newRetryCount,
                 state: 'BLOB_CREATED',
+                errorMessage: result.error,
+                retryCount: Math.max(newRetryCount, 0),
               });
             }
           }
@@ -260,7 +261,7 @@ const Blob: React.FC<BlobProps> = ({
               const newRetryCount = blob.retryCount - 1;
               setBlob(hash, {
                 errorMessage: message,
-                retryCount: newRetryCount,
+                retryCount: Math.max(newRetryCount, 0),
                 state: 'MARKED_FOR_DETACH',
               });
             }
