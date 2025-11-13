@@ -119,8 +119,9 @@ const Blob: React.FC<BlobProps> = ({
                   errorMessage: null,
                   state: 'BLOB_CREATED',
                 });
-              } else {
+              } else if (result.key) {
                 setBlob(hash, {
+                  key: result.key,
                   previewUrl: result.previewUrl ?? blob.previewUrl,
                   url: result.url ?? blob.url,
                   errorMessage: null,
@@ -154,6 +155,7 @@ const Blob: React.FC<BlobProps> = ({
               setBlob(hash, {
                 errorMessage: null,
                 state: 'UPLOADED',
+                key: blob.key,
               });
             } else {
               // Step back to UPLOADING_URL_GENERATED, set error and decrement retry count

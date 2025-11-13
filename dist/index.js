@@ -4467,8 +4467,9 @@ const Blob = ({ instantUpload, instantSyncAttach, attachableId, attachableType, 
                                     state: 'BLOB_CREATED',
                                 });
                             }
-                            else {
+                            else if (result.key) {
                                 setBlob(hash, {
+                                    key: result.key,
                                     previewUrl: result.previewUrl ?? blob.previewUrl,
                                     url: result.url ?? blob.url,
                                     errorMessage: null,
@@ -4498,6 +4499,7 @@ const Blob = ({ instantUpload, instantSyncAttach, attachableId, attachableType, 
                             setBlob(hash, {
                                 errorMessage: null,
                                 state: 'UPLOADED',
+                                key: blob.key,
                             });
                         }
                         else {
