@@ -4750,7 +4750,7 @@ function mergeStyling(custom) {
     };
 }
 
-const BlobUploader = ({ instantUpload, instantSyncAttach = false, maxBlobs, blobs, setBlobs, attachableId, attachableType = 'Offer', processRunning = false, mainBlobHash: externalMainBlobHash, onMainBlobChange, mutations, styling: customStyling, }) => {
+const BlobUploader = ({ instantUpload, instantSyncAttach = false, maxBlobs, blobs, setBlobs, attachableId, attachableType = 'Offer', processRunning = false, maxRetries = 3, mainBlobHash: externalMainBlobHash, onMainBlobChange, mutations, styling: customStyling, }) => {
     const maxItems = maxBlobs ?? 10;
     const shouldUploadInstantly = instantUpload ?? true;
     const shouldAttachInstantly = instantSyncAttach ?? false;
@@ -4814,11 +4814,11 @@ const BlobUploader = ({ instantUpload, instantSyncAttach = false, maxBlobs, blob
                 state: 'SELECTED_FOR_UPLOAD',
                 errorMessage: null,
                 url: null,
-                retryCount: 3,
+                retryCount: maxRetries,
             };
             addBlob(newBlob);
         }
-    }, [maxItems, addBlob]);
+    }, [maxItems, maxRetries, addBlob]);
     const stateSetters = React.useMemo(() => ({
         setBlob,
     }), [setBlob]);

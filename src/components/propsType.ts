@@ -46,6 +46,12 @@ export type LoadedPropsType = {
   processRunning?: boolean;
 
   /**
+   * Maximum number of retry attempts for failed uploads
+   * @default 3
+   */
+  maxRetries?: number;
+
+  /**
    * Controlled list of blobs managed by the parent
    */
   blobs: BlobType[];

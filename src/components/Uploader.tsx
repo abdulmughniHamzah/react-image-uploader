@@ -27,6 +27,7 @@ const BlobUploader = ({
   attachableId,
   attachableType = 'Offer',
   processRunning = false,
+  maxRetries = 3,
   mainBlobHash: externalMainBlobHash,
   onMainBlobChange,
   mutations,
@@ -119,11 +120,11 @@ const BlobUploader = ({
         state: 'SELECTED_FOR_UPLOAD',
         errorMessage: null,
         url: null,
-        retryCount: 3, // Initialize with 3 retries
+        retryCount: maxRetries, // Initialize with configurable retries
       };
       addBlob(newBlob);
     }
-  }, [maxItems, addBlob]);
+  }, [maxItems, maxRetries, addBlob]);
 
   const stateSetters = useMemo(
     () => ({

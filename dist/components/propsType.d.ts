@@ -9,6 +9,7 @@ export type LoadedPropsType = {
     instantUpload?: boolean;
     instantSyncAttach?: boolean;
     processRunning?: boolean;
+    maxRetries?: number;
     blobs: BlobType[];
     setBlobs: (next: BlobType[]) => void;
     mainBlobHash?: string | null;
